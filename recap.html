@@ -65,6 +65,7 @@
   .lg{display:inline-flex; align-items:center; gap:.45em}
   .sw{width:34px; height:0; border-top-width:6px; border-top-style:solid; border-radius:3px; display:inline-block}
   .box{width:20px; height:14px; border-radius:3px; display:inline-block; border:2px solid}
+  .nextlink{display:inline-block;margin-right:.6rem;background:var(--paint);color:var(--sign-black);font-weight:800;letter-spacing:.04em;text-decoration:none;padding:.3em .9em;border-radius:8px;font-size:clamp(.8rem,1.9vh,1.15rem)}
 </style>
 </head>
 <body>
@@ -73,7 +74,7 @@
     <a class="brand" href="/slides" style="text-decoration:none;color:inherit"><span class="ico">✈</span> REX HÉROS</a>
     <span class="tag">RÉCAP</span>
     <h1>Carte des opérations</h1>
-    <span class="sub"><span class="chip">4SHARE MORNING</span></span>
+    <span class="sub"><a class="nextlink" href="refonte.html">Suite →</a> <span class="chip">4SHARE MORNING</span></span>
   </header>
 
   <div class="stage">
@@ -265,6 +266,7 @@ N.forEach(n=>{
 
 // API pour injecter un chemin plus tard (vrai projet / vote de la salle)
 window.setChemin = function(ids){ CHEMIN = ids||[]; location.reload(); };
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '||e.key==='ArrowRight'){ e.preventDefault(); location.href='refonte.html'; } });
 </script>
 </body>
 </html>

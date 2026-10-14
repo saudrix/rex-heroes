@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>REX héros · La refonte en un coup d'œil</title>
+<style>
+  :root{
+    --paint:#f2c400; --sign-black:#141414; --navy:#122a4f;
+    --txt:#f6f2e7; --muted:#c3bcad; --lit:#ffd21e;
+    --card:rgba(12,22,40,.6); --line:rgba(242,196,0,.22);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{height:100vh;overflow:hidden;color:var(--txt);display:flex;flex-direction:column;
+    font-family:"Arial Narrow","Roboto Condensed",Arial,system-ui,sans-serif;
+    background:radial-gradient(120% 80% at 82% 4%, rgba(255,210,120,.26), rgba(255,210,120,0) 46%),
+      linear-gradient(180deg,#0a1730 0%,#10294d 42%,#1c3350 72%,#243a4a 100%)}
+  .scan{position:fixed;inset:0;pointer-events:none;mix-blend-mode:overlay;opacity:.4;
+    background:repeating-linear-gradient(115deg, rgba(255,255,255,.05) 0 3px, transparent 3px 26px)}
+  header{flex:0 0 auto;display:flex;align-items:center;gap:.8rem;z-index:2;
+    padding:clamp(.5rem,1.4vh,.9rem) clamp(1rem,3vw,2.4rem);border-bottom:2px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:.5rem;font-weight:800;letter-spacing:.04em;font-size:clamp(1.05rem,2.4vh,1.5rem);color:var(--txt);text-decoration:none}
+  .brand:hover{color:var(--paint)}
+  .brand .ico{width:1.4em;height:1.4em;display:grid;place-items:center;color:var(--sign-black);background:var(--paint);border-radius:7px;font-size:.78em}
+  .code{color:var(--sign-black);background:var(--paint);border-radius:6px;font-weight:800;padding:.1em .55em;letter-spacing:.05em;font-size:clamp(1rem,2.3vh,1.4rem)}
+  header .right{margin-left:auto}
+  .chip{background:rgba(242,196,0,.14);border:1px solid rgba(242,196,0,.5);color:var(--paint);border-radius:999px;padding:.22em .8em;font-weight:700;letter-spacing:.1em;font-size:clamp(.7rem,1.7vh,1rem)}
+
+  main{flex:1 1 auto;min-height:0;z-index:2;display:flex;flex-direction:column;align-items:center;
+    gap:clamp(.6rem,1.8vh,1.2rem);padding:clamp(.9rem,2.4vh,1.6rem) clamp(1.2rem,3.2vw,2.6rem)}
+  .kicker{display:flex;align-items:center;gap:.6em;letter-spacing:.42em;text-transform:uppercase;
+    font-size:clamp(.7rem,1.8vh,1rem);opacity:.92}
+  .kicker::before,.kicker::after{content:"";height:1px;width:clamp(24px,6vw,70px);background:rgba(245,241,230,.5)}
+  h1{margin:0;font-weight:800;line-height:1;text-align:center;font-size:clamp(2.2rem,7vh,4.6rem);text-shadow:0 8px 40px rgba(0,0,0,.45)}
+  h1 .hl{color:var(--paint)}
+
+  .duo{flex:1 1 auto;min-height:0;width:100%;display:grid;grid-template-columns:1fr auto 1fr;gap:clamp(.8rem,2vw,1.6rem);align-items:stretch}
+  .shot{min-height:0;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  .shot.apres{border-color:var(--lit);box-shadow:0 0 0 2px rgba(255,210,30,.28),0 24px 60px rgba(0,0,0,.4)}
+  .shot .bar{display:flex;align-items:center;gap:.7rem;padding:.55rem .9rem;border-bottom:1px solid var(--line);background:rgba(10,15,28,.5)}
+  .sign{font-weight:800;letter-spacing:.08em;border-radius:5px;padding:.08em .6em;font-size:clamp(1rem,2.4vh,1.45rem)}
+  .avant .sign{background:var(--sign-black);color:var(--paint);border:2px solid var(--paint)}
+  .apres .sign{background:var(--paint);color:var(--sign-black);border:2px solid var(--paint)}
+  .shot .cap{color:var(--muted);font-size:clamp(.85rem,1.9vh,1.15rem);letter-spacing:.03em}
+  .frame{flex:1 1 auto;min-height:0;display:grid;place-items:center;padding:clamp(.5rem,1.4vh,.9rem);cursor:zoom-in}
+  .frame img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.45);background:#fff}
+  .ph{width:100%;height:100%;border:2px dashed rgba(242,196,0,.4);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3rem;text-align:center;
+    color:var(--muted);font-size:clamp(.85rem,1.9vh,1.1rem);line-height:1.5;padding:1rem}
+  .ph b{color:var(--paint)}
+  .mid{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.4rem;color:var(--paint)}
+  .mid .plane{width:clamp(44px,5vw,70px);height:clamp(44px,5vw,70px);border-radius:50%;display:grid;place-items:center;
+    background:var(--paint);color:var(--sign-black);font-size:clamp(1.3rem,3vh,2rem);box-shadow:0 10px 30px rgba(242,196,0,.3)}
+  .mid .rail{width:2px;flex:1;max-height:18vh;background:repeating-linear-gradient(180deg,var(--paint) 0 8px,transparent 8px 16px);opacity:.6}
+
+  footer{flex:0 0 auto;z-index:2;display:flex;align-items:center;justify-content:flex-end;gap:1rem;
+    padding:.5rem clamp(1.2rem,3.2vw,2.6rem);border-top:2px solid var(--line);background:rgba(10,15,28,.5)}
+  footer .back{margin-right:auto;color:var(--muted);text-decoration:none;font-size:clamp(.8rem,1.8vh,1.05rem)}
+  footer .back:hover{color:var(--paint)}
+  .next{display:inline-flex;align-items:center;gap:.5em;background:var(--paint);color:var(--sign-black);font-weight:800;letter-spacing:.04em;text-decoration:none;padding:.62em 1.25em;border-radius:12px;font-size:clamp(1.05rem,2.4vh,1.45rem)}
+  .next:hover{filter:brightness(1.06)}
+  .hint{color:var(--muted);font-size:clamp(.72rem,1.6vh,.98rem);white-space:nowrap}
+  kbd{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);border-radius:5px;padding:.04em .45em;font-family:inherit}
+
+  /* zoom plein écran */
+  #zoom{position:fixed;inset:0;z-index:10;display:none;place-items:center;background:rgba(5,10,20,.92);cursor:zoom-out;padding:2.5vh 2.5vw}
+  #zoom.on{display:grid}
+  #zoom img{max-width:100%;max-height:100%;object-fit:contain;border-radius:10px;background:#fff}
+  @media (max-width:960px){ .duo{grid-template-columns:1fr} .mid{display:none} }
+</style>
+</head>
+<body>
+  <div class="scan"></div>
+  <header>
+    <a class="brand" href="/slides"><span class="ico">✈</span> REX HÉROS</a>
+    <span class="code">AVANT · APRÈS</span>
+    <span class="right"><span class="chip">4SHARE MORNING</span></span>
+  </header>
+
+  <main>
+    <div class="kicker">✈ Épilogue · le retour au sol</div>
+    <h1>La refonte <span class="hl">en un coup d'œil</span></h1>
+
+    <div class="duo">
+      <section class="shot avant">
+        <div class="bar"><span class="sign">AVANT</span><span class="cap">Le module de facturation historique</span></div>
+        <div class="frame" data-src="img/facturation-avant.png"></div>
+      </section>
+      <div class="mid" aria-hidden="true"><span class="rail"></span><span class="plane">✈</span><span class="rail"></span></div>
+      <section class="shot apres">
+        <div class="bar"><span class="sign">APRÈS</span><span class="cap">La nouvelle facturation</span></div>
+        <div class="frame" data-src="img/facturation-apres.png"></div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <a class="back" href="recap.html">← Carte des opérations</a>
+    <a class="next" href="merci.html">Slide suivante →</a>
+    <span class="hint"><kbd>Espace</kbd> / <kbd>Entrée</kbd> · clic sur une image pour zoomer</span>
+  </footer>
+
+  <div id="zoom"><img alt=""></div>
+
+<script>
+(function(){
+  const zoom=document.getElementById('zoom'), zimg=zoom.querySelector('img');
+  document.querySelectorAll('.frame').forEach(f=>{
+    const src=f.dataset.src, img=new Image();
+    img.alt=f.parentElement.querySelector('.sign').textContent+' : '+f.parentElement.querySelector('.cap').textContent;
+    img.onload=()=>{ f.innerHTML=''; f.appendChild(img); f.addEventListener('click',()=>{ zimg.src=src; zoom.classList.add('on'); }); };
+    img.onerror=()=>{ f.style.cursor='default'; f.innerHTML='<div class="ph"><span>Capture à déposer :</span><b>'+src+'</b></div>'; };
+    img.src=src;
+  });
+  zoom.addEventListener('click',()=>zoom.classList.remove('on'));
+  document.addEventListener('keydown',e=>{
+    if(zoom.classList.contains('on')){ if(e.key==='Escape'||e.key===' '||e.key==='Enter'){ e.preventDefault(); zoom.classList.remove('on'); } return; }
+    if(e.key==='Enter'||e.key===' '||e.key==='ArrowRight'){ e.preventDefault(); location.href='merci.html'; }
+    if(e.key==='ArrowLeft'){ location.href='recap.html'; }
+  });
+})();
+</script>
+</body>
+</html>

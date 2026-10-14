@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>REX héros · Merci</title>
+<style>
+  :root{
+    --paint:#f2c400; --sign-black:#141414;
+    --navy:#122a4f; --navy2:#0c1d38; --amber:#e8a24a;
+    --txt:#f5f1e6; --muted:#c9c2b2; --lit:#ffd21e;
+    --pass:#f4f1e8;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    height:100vh; overflow:hidden; color:var(--txt);
+    font-family:"Arial Narrow","Roboto Condensed",Arial,system-ui,sans-serif;
+    position:relative;
+    /* ciel crépuscule facon hall d'aeroport */
+    background:
+      radial-gradient(120% 90% at 78% 8%, rgba(255,210,120,.55), rgba(255,210,120,0) 42%),
+      linear-gradient(180deg, #0a1730 0%, #10294d 38%, #2d4a6e 60%, #7a6a52 82%, #4a4a47 100%);
+  }
+  /* bande de pistes / tarmac en bas */
+  .ground{position:absolute;left:0;right:0;bottom:0;height:34vh;
+    background:
+      linear-gradient(180deg, rgba(20,20,18,0) 0%, rgba(26,26,22,.35) 40%, rgba(26,26,22,.6) 100%),
+      repeating-linear-gradient(90deg, rgba(0,0,0,.14) 0 2px, transparent 2px 190px),
+      #4f4f4b;
+    clip-path:polygon(0 22%,100% 0,100% 100%,0 100%);}
+  .tx{position:absolute;bottom:0;height:34vh;width:100%;pointer-events:none}
+  .scan{position:absolute;inset:0;pointer-events:none;mix-blend-mode:overlay;
+    background:repeating-linear-gradient(115deg, rgba(255,255,255,.06) 0 3px, transparent 3px 26px)}
+
+  .wrap{position:relative;z-index:3;height:100%;display:flex;flex-direction:column;
+    padding:clamp(1rem,3.2vh,2rem) clamp(1.2rem,5vw,4rem)}
+  /* barre haut facon menu */
+  .top{display:flex;align-items:center;gap:.7rem;flex:0 0 auto}
+  .brand{display:flex;align-items:center;gap:.55rem;font-weight:700;letter-spacing:.04em;font-size:clamp(1rem,2.3vh,1.4rem)}
+  .brand .ico{width:1.4em;height:1.4em;display:grid;place-items:center;color:var(--sign-black);
+    background:var(--paint);border-radius:7px;font-size:.8em}
+  .top .board{margin-left:auto;display:flex;gap:.4rem;align-items:center;color:var(--muted);
+    font-size:clamp(.65rem,1.6vh,.9rem);letter-spacing:.14em}
+  .chip{background:rgba(242,196,0,.14);border:1px solid rgba(242,196,0,.5);color:var(--paint);
+    border-radius:999px;padding:.2em .7em;font-weight:700;letter-spacing:.1em}
+
+  /* coeur : titre + carte */
+  .hero{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:clamp(.6rem,2vh,1.2rem)}
+  .kicker{display:flex;align-items:center;gap:.6em;color:var(--txt);letter-spacing:.42em;
+    font-size:clamp(.6rem,1.7vh,.95rem);text-transform:uppercase;opacity:.92}
+  .kicker::before,.kicker::after{content:"";height:1px;width:clamp(24px,6vw,70px);background:rgba(245,241,230,.5)}
+  h1{margin:0;font-weight:800;line-height:.98;letter-spacing:.005em;
+    font-size:clamp(2.2rem,8.2vh,6rem);text-shadow:0 8px 40px rgba(0,0,0,.45)}
+  h1 .vous{color:var(--paint)}
+  .sub{margin:0;color:var(--muted);font-size:clamp(.9rem,2.3vh,1.4rem);letter-spacing:.02em}
+
+  /* carte d'embarquement */
+  .pass{margin-top:clamp(.4rem,1.6vh,1rem);width:min(760px,94vw);display:flex;
+    background:var(--pass);color:#1b2436;border-radius:16px;overflow:hidden;
+    box-shadow:0 28px 70px rgba(0,0,0,.5);position:relative}
+  .pass .stub{flex:0 0 34%;background:var(--navy);color:#dfe8f5;padding:clamp(.7rem,1.8vh,1.1rem);
+    display:flex;flex-direction:column;gap:.5rem;position:relative}
+  .pass .stub .lbl{font-size:.62rem;letter-spacing:.18em;color:#9fb6d8}
+  .route{display:flex;align-items:center;justify-content:space-between;font-weight:800;
+    font-size:clamp(1.1rem,3vh,1.7rem);letter-spacing:.04em}
+  .route .arr{flex:1;margin:0 .4em;border-top:2px dotted #6f8bb5;position:relative;top:-.2em}
+  .qr{margin-top:auto;width:clamp(54px,8vh,74px);height:clamp(54px,8vh,74px);border-radius:6px;background:
+      conic-gradient(#fff 0 0) ,#fff;position:relative}
+  .main{flex:1;padding:clamp(.7rem,1.8vh,1.15rem) clamp(.9rem,2vw,1.4rem);display:grid;
+    grid-template-columns:1fr 1fr;gap:.55rem .9rem;align-content:center}
+  .f{display:flex;flex-direction:column;gap:.1rem}
+  .f .k{font-size:.6rem;letter-spacing:.16em;color:#7c879c}
+  .f .v{font-size:clamp(.95rem,2.1vh,1.25rem);font-weight:700;color:#16213a}
+  .f.span{grid-column:1 / -1}
+  .perf{position:absolute;left:34%;top:0;bottom:0;width:0;border-left:2px dashed rgba(27,36,54,.28)}
+  .perf::before,.perf::after{content:"";position:absolute;left:-10px;width:20px;height:20px;border-radius:50%;background:var(--navy)}
+  .perf::before{top:-10px} .perf::after{bottom:-10px;background:var(--pass);box-shadow:0 0 0 0}
+
+  /* pied : embarquement */
+  .foot{flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;
+    padding-top:clamp(.5rem,1.6vh,1rem)}
+  .cta{display:inline-flex;align-items:center;gap:.6em;background:var(--paint);color:var(--sign-black);
+    font-weight:800;letter-spacing:.06em;text-decoration:none;border:none;cursor:pointer;
+    padding:.7em 1.4em;border-radius:10px;font-size:clamp(.95rem,2.2vh,1.25rem);
+    box-shadow:0 10px 30px rgba(242,196,0,.3)}
+  .cta:hover{filter:brightness(1.06)}
+  .hint{color:var(--muted);font-size:clamp(.65rem,1.6vh,.9rem);letter-spacing:.06em}
+  kbd{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);border-radius:5px;padding:.05em .45em;font-family:inherit}
+
+  .pass .stub .ok{margin-top:auto;display:inline-flex;align-items:center;justify-content:center;gap:.4em;
+    border:2px solid var(--paint);color:var(--paint);border-radius:8px;padding:.25em .6em;font-weight:800;letter-spacing:.14em;
+    font-size:clamp(.8rem,1.8vh,1rem);transform:rotate(-6deg);align-self:flex-start}
+  .cta.ghost{background:transparent;color:var(--paint);border:2px solid var(--paint);box-shadow:none}
+</style>
+</head>
+<body>
+  <div class="ground"></div>
+  <svg class="tx" viewBox="0 0 1000 300" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <path d="M-20 300 L360 120 L470 120" fill="none" stroke="#f2c400" stroke-width="5" opacity=".8" stroke-linecap="round"/>
+    <path d="M-20 300 L360 120 L470 120" fill="none" stroke="#141410" stroke-width="2" stroke-dasharray="2 20" opacity=".6"/>
+    <path d="M1020 300 L640 150 L520 150" fill="none" stroke="#c9b24d" stroke-width="3" opacity=".55" stroke-dasharray="1 10"/>
+    <!-- avion pose au parking, cote arrivee -->
+    <g transform="translate(960 150) scale(-1 1)" fill="#e9edf4" opacity=".96">
+      <path d="M0 18 L120 10 L150 2 L156 10 L132 18 L120 26 L0 22 Z"/>
+      <path d="M60 18 L40 -14 L52 -14 L86 14 Z"/>
+      <path d="M60 22 L40 50 L52 50 L86 26 Z"/>
+      <circle cx="150" cy="10" r="3" fill="#f2c400"/>
+    </g>
+  </svg>
+  <div class="scan"></div>
+
+  <div class="wrap">
+    <div class="top">
+      <a class="brand" href="/slides" style="text-decoration:none;color:inherit"><span class="ico">✈</span> REX&nbsp;HÉROS</a>
+      <span class="board"><span class="chip">4SHARE MORNING</span></span>
+    </div>
+
+    <div class="hero">
+      <div class="kicker">✈ Vol terminé · bienvenue à destination</div>
+      <h1>Merci de votre<br><span class="vous">attention</span></h1>
+      <p class="sub">Les héros, c'était vous. Place aux questions.</p>
+
+      <div class="pass">
+        <div class="stub">
+          <div class="lbl">CARTE DE DÉBARQUEMENT</div>
+          <div class="route"><span>SPEC</span><span class="arr"></span><span>PROD</span></div>
+          <div class="lbl" style="letter-spacing:.14em">VOL REX&middot;2026 &nbsp;|&nbsp; CLASSE AVENTURE</div>
+          <span class="ok">✓ ATTERRI</span>
+        </div>
+        <div class="perf"></div>
+        <div class="main">
+          <div class="f"><span class="k">PROVENANCE</span><span class="v">Brief projet</span></div>
+          <div class="f"><span class="k">DESTINATION</span><span class="v">Retour d'expérience</span></div>
+          <div class="f"><span class="k">PORTE</span><span class="v">Questions / réponses</span></div>
+          <div class="f"><span class="k">BAGAGES</span><span class="v">Tapis n° 4SH</span></div>
+          <div class="f span"><span class="k">COMMANDANT DE BORD</span><span class="v">Simon AUDRIX</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="foot">
+      <a class="cta ghost" href="refonte.html">← Avant / après</a>
+      <a class="cta" href="recap.html">Revoir la carte des opérations</a>
+      <span class="hint"><kbd>←</kbd> slide précédente</span>
+    </div>
+  </div>
+
+<script>
+  document.addEventListener('keydown',function(e){ if(e.key==='ArrowLeft'){ location.href='refonte.html'; } });
+</script>
+</body>
+</html>

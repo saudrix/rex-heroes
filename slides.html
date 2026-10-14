@@ -58,6 +58,8 @@
   if(window.REX) order.forEach(k=>{ const d=REX.slides[k]; if(!d) return; const [t,cls]=typeOf(d);
     rows.push({num:d.node, titre:d.chapitre||('Slide '+k), pill:t, pcls:cls, file:'slide.html?s='+k}); });
   rows.push({num:'R',titre:'Récap, carte des opérations',pill:'récap',pcls:'t-recap',file:'recap.html'});
+  rows.push({num:'A/A',titre:'La refonte en un coup d\'œil (avant / après)',pill:'épilogue',pcls:'t-titre',file:'refonte.html'});
+  rows.push({num:'✓',titre:'Merci de votre attention',pill:'épilogue',pcls:'t-titre',file:'merci.html'});
   rows.forEach(r=>{ const el=document.createElement('div'); el.className='brow';
     el.innerHTML=`<div class="num">${r.num}</div><div class="titre">${r.titre}</div>`+
       `<div><span class="pill ${r.pcls}">${r.pill}</span></div><div><a class="go" href="${r.file}">OUVRIR</a></div>`;

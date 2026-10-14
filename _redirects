@@ -1,4 +1,6 @@
 /start      /index.html           200
 /slides     /slides.html          200
 /recap      /recap.html           200
+/refonte    /refonte.html         200
+/merci      /merci.html           200
 /vote/:n    /votant.html?s=:n      200
