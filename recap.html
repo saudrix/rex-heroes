@@ -143,7 +143,8 @@ const E = [
 ];
 
 // ----- chemin d'exemple en surbrillance (à remplacer par le vrai + celui de la salle) -----
-let CHEMIN = ['S0','S2','S3','S7','S9','S13','S15','S17','TADA'];
+let CHEMIN = ['S0','S2','S3','S7','S9','S13','S15','S17','TADA']; // exemple par défaut
+try{ const saved = JSON.parse(localStorage.getItem('rex_chemin')); if(Array.isArray(saved) && saved.length) CHEMIN = saved; }catch(e){}
 
 // tailles de boîtes
 function dims(t){

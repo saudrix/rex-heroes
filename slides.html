@@ -68,9 +68,10 @@
 <script>
 // Manifeste des slides : on ajoute une ligne ici à chaque nouvelle slide.
 const SLIDES = [
-  {num:'0', titre:'Titre, embarquement (accueil)', type:'titre', tcls:'t-annexe', etat:'PRÊT',     ecls:'e-ok',   file:'/start'},
-  {num:'R', titre:'Récap, carte des opérations',   type:'récap', tcls:'t-recap',  etat:'PRÊT',     ecls:'e-ok',   file:'recap.html'},
-  {num:'▶', titre:'Vote live (vue présentateur)',  type:'vote',  tcls:'t-vote',   etat:'EN LIGNE', ecls:'e-live', file:'vote.html#present'},
+  {num:'—',  titre:'Titre, embarquement (accueil)',  type:'titre', tcls:'t-annexe', etat:'PRÊT',     ecls:'e-ok',   file:'/start'},
+  {num:'S0', titre:'Le brief, première décision',    type:'choix', tcls:'t-choix',  etat:'PRÊT',     ecls:'e-ok',   file:'slide.html?s=0'},
+  {num:'R',  titre:'Récap, carte des opérations',    type:'récap', tcls:'t-recap',  etat:'PRÊT',     ecls:'e-ok',   file:'recap.html'},
+  {num:'▶',  titre:'Vote live (ancien POC)',         type:'vote',  tcls:'t-vote',   etat:'EN LIGNE', ecls:'e-live', file:'vote.html#present'},
 ];
 const board=document.getElementById('board');
 SLIDES.forEach(s=>{

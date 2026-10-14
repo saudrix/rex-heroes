@@ -1,4 +1,5 @@
-/start    /index.html    200
-/slides   /slides.html   200
-/recap    /recap.html    200
-/vote     /vote.html     200
+/start     /index.html              200
+/slides    /slides.html             200
+/recap     /recap.html              200
+/vote      /vote.html               200
+/:slide    /votant.html?s=:slide    200

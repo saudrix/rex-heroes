@@ -127,15 +127,15 @@
         <div class="main">
           <div class="f"><span class="k">DÉPART</span><span class="v">Brief projet</span></div>
           <div class="f"><span class="k">ARRIVÉE</span><span class="v">Retour d'expérience</span></div>
-          <div class="f"><span class="k">DATE</span><span class="v" id="date">à confirmer</span></div>
-          <div class="f"><span class="k">SESSION</span><span class="v">4Share morning</span></div>
+          <div class="f"><span class="k">DATE</span><span class="v" id="date">15 oct. 2026</span></div>
+          <div class="f"><span class="k">EMBARQUEMENT</span><span class="v">10h30 · 4Share morning</span></div>
           <div class="f span"><span class="k">COMMANDANT DE BORD</span><span class="v">Simon AUDRIX</span></div>
         </div>
       </div>
     </div>
 
     <div class="foot">
-      <a class="cta" id="go" href="/slides">Embarquement immédiat →</a>
+      <a class="cta" id="go" href="slide.html?s=0">Embarquement immédiat →</a>
       <span class="hint">ou appuyez sur <kbd>Entrée</kbd> / <kbd>Espace</kbd></span>
     </div>
   </div>
@@ -156,7 +156,7 @@
     q.appendChild(s);
   })();
   // lancer la presentation
-  function go(){ window.location.href='/slides'; }
+  function go(){ window.location.href='slide.html?s=0'; }
   document.getElementById('go').addEventListener('click',function(e){e.preventDefault();go();});
   document.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){e.preventDefault();go();} });
 </script>
