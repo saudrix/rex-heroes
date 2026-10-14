@@ -66,6 +66,26 @@
   .sw{width:34px; height:0; border-top-width:6px; border-top-style:solid; border-radius:3px; display:inline-block}
   .box{width:20px; height:14px; border-radius:3px; display:inline-block; border:2px solid}
   .nextlink{display:inline-block;margin-right:.6rem;background:var(--paint);color:var(--sign-black);font-weight:800;letter-spacing:.04em;text-decoration:none;padding:.3em .9em;border-radius:8px;font-size:clamp(.8rem,1.9vh,1.15rem)}
+  .toggle{display:inline-flex;border:2px solid var(--paint);border-radius:999px;overflow:hidden;margin-left:1rem}
+  .toggle button{all:unset;cursor:pointer;padding:.3em 1em;font-weight:800;letter-spacing:.05em;color:var(--paint);font-size:clamp(.8rem,1.9vh,1.15rem)}
+  .toggle button.on{background:var(--paint);color:var(--sign-black)}
+  .notice{position:absolute;left:50%;top:1rem;transform:translateX(-50%);z-index:3;background:rgba(20,20,18,.8);border:1px dashed var(--paint);color:var(--muted);border-radius:10px;padding:.4em 1em;font-size:clamp(.8rem,1.8vh,1.05rem);display:none}
+  /* pop-up verdict */
+  #pop{position:fixed;inset:0;z-index:20;display:none;place-items:center;background:rgba(5,10,20,.72)}
+  #pop.on{display:grid}
+  #pop .card{width:min(640px,92vw);background:#10223f;border:2px solid var(--paint);border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.6);overflow:hidden}
+  #pop .hd{display:flex;align-items:center;gap:.8rem;padding:.9rem 1.2rem;background:rgba(20,20,18,.6);border-bottom:2px solid rgba(242,196,0,.25)}
+  #pop .code{background:var(--paint);color:var(--sign-black);font-weight:800;border-radius:6px;padding:.1em .55em;font-size:clamp(1.1rem,2.6vh,1.6rem)}
+  #pop .ttl{font-weight:800;font-size:clamp(1.3rem,3.2vh,2rem)}
+  #pop .x{all:unset;margin-left:auto;cursor:pointer;color:var(--muted);font-size:1.6rem;padding:0 .3rem}
+  #pop .bd{padding:1.1rem 1.3rem 1.4rem;display:flex;flex-direction:column;gap:.8rem}
+  #pop .lbl{color:var(--muted);letter-spacing:.16em;text-transform:uppercase;font-size:clamp(.8rem,1.8vh,1.05rem)}
+  #pop .choice{font-weight:800;font-size:clamp(1.3rem,3.2vh,2rem);line-height:1.2}
+  #pop .verdict{align-self:flex-start;font-weight:800;letter-spacing:.14em;border-radius:8px;padding:.25em .8em;font-size:clamp(1.1rem,2.8vh,1.7rem);transform:rotate(-3deg);border:3px solid}
+  #pop .verdict.succes{color:#58d98c;border-color:#58d98c}
+  #pop .verdict.echec{color:#ff7a66;border-color:#ff7a66}
+  #pop .verdict.avenir{color:#c3c7cc;border-color:#c3c7cc}
+  #pop .note{margin:0;color:#eee8d9;font-size:clamp(1.1rem,2.7vh,1.6rem);line-height:1.4}
 </style>
 </head>
 <body>
@@ -74,10 +94,12 @@
     <a class="brand" href="/slides" style="text-decoration:none;color:inherit"><span class="ico">✈</span> REX HÉROS</a>
     <span class="tag">RÉCAP</span>
     <h1>Carte des opérations</h1>
+    <span class="toggle" role="group" aria-label="Parcours affiché"><button id="t-salle" class="on">Votre parcours</button><button id="t-reel">Le vrai projet</button></span>
     <span class="sub"><a class="nextlink" href="refonte.html">Suite →</a> <span class="chip">4SHARE MORNING</span></span>
   </header>
 
   <div class="stage">
+    <div class="notice" id="notice">Parcours réel du projet à renseigner</div>
     <svg id="map" viewBox="0 0 1740 900" preserveAspectRatio="xMidYMid meet" aria-label="Carte du parcours">
       <defs>
         <marker id="ah-dim" markerWidth="7" markerHeight="7" refX="5.5" refY="3" orient="auto">
@@ -97,7 +119,7 @@
   </div>
 
   <footer>
-    <span class="lg"><span class="sw" style="border-top-color:var(--lit);height:0;border-top-width:7px"></span> chemin emprunté</span>
+    <span class="lg"><span class="sw" style="border-top-color:var(--lit);height:0;border-top-width:7px"></span> <span id="lg-lit">votre parcours</span></span>
     <span class="lg"><span class="sw" style="border-top-color:var(--paint-dim)"></span> autres chemins</span>
     <span class="lg"><span class="box" style="background:var(--sign-yellow);border-color:#caa400"></span> slide</span>
     <span class="lg"><span class="box" style="background:var(--cadrage);border-color:var(--cadrage-edge)"></span> point de cadrage</span>
@@ -106,6 +128,10 @@
     <span class="lg"><span class="box" style="background:var(--bof);border-color:#c3c7cc"></span> fin BOF</span>
   </footer>
 
+<div id="pop"><div class="card"><div class="hd"><span class="code" id="p-code"></span><span class="ttl" id="p-ttl"></span><button class="x" id="p-x" aria-label="Fermer">✕</button></div><div class="bd"><div class="lbl" id="p-lbl">Choix effectué</div><div class="choice" id="p-choice"></div><div class="verdict" id="p-verdict"></div><p class="note" id="p-note"></p></div></div></div>
+
+<script src="/slides-data.js?v=3"></script>
+<script src="/verdicts.js"></script>
 <script>
 const SVGNS="http://www.w3.org/2000/svg";
 // ----- données (mappées sur le schéma définitif S0..S18 + fins) -----
@@ -150,9 +176,48 @@ const E = [
   ['S18','BOF'],
 ];
 
-// ----- chemin d'exemple en surbrillance (à remplacer par le vrai + celui de la salle) -----
-let CHEMIN = ['S0','S2','S3','S7','S9','S13','S15','S17','TADA']; // exemple par défaut
-try{ const saved = JSON.parse(localStorage.getItem('rex_chemin')); if(Array.isArray(saved) && saved.length) CHEMIN = saved; }catch(e){}
+// ----- chemins : celui de la salle (localStorage) et celui du vrai projet -----
+// Parcours réel du projet, à renseigner (identifiants de la carte : S0..S18, GO, GO2, TADA, BOF)
+const CHEMIN_REEL = ['S0','S1','S2','S5','S4','S6','S3','S7','S9','S11','S14','S13','S15','S17','BOF'];
+const ALIAS = {FINTADA:'TADA', FINBOF:'BOF'};
+let CHEMIN_SALLE = [];
+try{
+  const saved = JSON.parse(localStorage.getItem('rex_chemin'));
+  if(Array.isArray(saved) && saved.length){
+    const ids = saved.map(x=>ALIAS[x]||x);
+    const k = ids.lastIndexOf('S0');            // on ne garde que la dernière partie jouée
+    CHEMIN_SALLE = k>0 ? ids.slice(k) : ids;
+  }
+}catch(e){}
+let MODE = 'salle';
+let CHEMIN = CHEMIN_SALLE;
+
+// ----- choix effectué à une case du chemin + verdict associé -----
+const REV = {TADA:'FINTADA', BOF:'FINBOF'};
+function slideOf(id){ const S=(window.REX&&REX.slides)||{}; const nid=REV[id]||id; const k=Object.keys(S).find(k=>S[k].node===nid); return k?S[k]:null; }
+function infoAt(id){
+  const i=CHEMIN.indexOf(id); if(i<0) return null;
+  const d=slideOf(id); if(!d) return null;
+  const nextId=CHEMIN[i+1]; const next=nextId?(REV[nextId]||nextId):null;
+  let code=id, label=d.forcedLabel?d.forcedLabel.replace(/\s*→\s*$/,''):'';
+  if(d.choix && next){ const c=d.choix.find(c=>{ const t=REX.slides[c.target]; return (t?t.node:c.target)===next; }); if(c){ code=c.code; label=c.label; } }
+  const V=window.REX_VERDICTS||{}; const v=V[code]||V[id];
+  if(d.fin) label=d.titreFin||label;
+  return v ? {id, titre:d.chapitre||id, label:v.choix||label, lbl:d.fin?'Dénouement':(d.choix?'Choix effectué':'Passage'), verdict:v.verdict, note:v.note||''} : null;
+}
+function openPop(inf){
+  document.getElementById('p-code').textContent=inf.id;
+  document.getElementById('p-ttl').textContent=inf.titre;
+  document.getElementById('p-lbl').textContent=inf.lbl||'Choix effectué';
+  document.getElementById('p-choice').textContent=inf.label||'(pas de choix, passage imposé)';
+  const v=document.getElementById('p-verdict'); const k=inf.verdict==='succes'?'succes':(inf.verdict==='echec'?'echec':'avenir');
+  v.className='verdict '+k; v.textContent={succes:'✓ SUCCÈS',echec:'✗ ÉCHEC',avenir:'? À VENIR'}[k];
+  document.getElementById('p-note').textContent=inf.note;
+  document.getElementById('pop').classList.add('on');
+}
+function closePop(){ document.getElementById('pop').classList.remove('on'); }
+document.getElementById('p-x').addEventListener('click',closePop);
+document.getElementById('pop').addEventListener('click',e=>{ if(e.target.id==='pop') closePop(); });
 
 // tailles de boîtes
 function dims(t){
@@ -175,6 +240,8 @@ const litNode = id => CHEMIN.includes(id);
 
 // ----- tracé des voies -----
 const gE=document.getElementById('edges'), gN=document.getElementById('nodes');
+function draw(){
+gE.innerHTML=''; gN.innerHTML='';
 function mkline(x1,y1,x2,y2,stroke,w,opts={}){
   const l=document.createElementNS(SVGNS,'line');
   l.setAttribute('x1',x1);l.setAttribute('y1',y1);l.setAttribute('x2',x2);l.setAttribute('y2',y2);
@@ -192,7 +259,8 @@ E.forEach(([aId,bId])=>{
   mkline(p1.x,p1.y,p2.x,p2.y,'#15150f',6);                               /* liseré foncé (peinture sur béton) */
   mkline(p1.x,p1.y,p2.x,p2.y,'var(--paint-dim)',3.2,{op:.72,marker:'url(#ah-dim)'}); /* ligne usée */
 });
-E.forEach(([aId,bId])=>{
+const EXTRA=[]; for(let i=0;i<CHEMIN.length-1;i++){ const a=CHEMIN[i], b=CHEMIN[i+1]; if(map[a]&&map[b]&&!E.some(([x,y])=>x===a&&y===b)) EXTRA.push([a,b]); }
+E.concat(EXTRA).forEach(([aId,bId])=>{
   if(!litEdge(aId,bId)) return;
   const a=map[aId], b=map[bId], p1=edgePt(a,b), p2=edgePt(b,a);
   mkline(p1.x,p1.y,p2.x,p2.y,'#15150f',11);                              /* liseré */
@@ -261,12 +329,38 @@ N.forEach(n=>{
     tc.textContent='CADRAGE';
     g.appendChild(tc);
   }
+  const inf = lit ? infoAt(n.id) : null;
+  if(inf){
+    const ok=inf.verdict==='succes', ko=inf.verdict==='echec';
+    const c=document.createElementNS(SVGNS,'circle');
+    c.setAttribute('cx',n.d.w+2);c.setAttribute('cy',-2);c.setAttribute('r',15);
+    c.setAttribute('fill',ok?'#27ae60':(ko?'#c0392b':'#7d8590'));c.setAttribute('stroke','#fff');c.setAttribute('stroke-width',2.5);
+    g.appendChild(c);
+    const tv=document.createElementNS(SVGNS,'text');
+    tv.setAttribute('x',n.d.w+2);tv.setAttribute('y',-1);tv.setAttribute('text-anchor','middle');tv.setAttribute('dominant-baseline','central');
+    tv.setAttribute('fill','#fff');tv.setAttribute('font-weight','800');tv.setAttribute('font-size',17);tv.textContent=ok?'✓':(ko?'✗':'?');
+    g.appendChild(tv);
+    g.style.cursor='pointer';
+    g.addEventListener('click',()=>openPop(inf));
+  }
   gN.appendChild(g);
 });
 
-// API pour injecter un chemin plus tard (vrai projet / vote de la salle)
-window.setChemin = function(ids){ CHEMIN = ids||[]; location.reload(); };
-document.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '||e.key==='ArrowRight'){ e.preventDefault(); location.href='refonte.html'; } });
+}
+// ----- bascule parcours salle / vrai projet -----
+function setMode(m){
+  MODE = m; CHEMIN = m==='reel' ? CHEMIN_REEL : CHEMIN_SALLE;
+  document.getElementById('t-salle').classList.toggle('on', m==='salle');
+  document.getElementById('t-reel').classList.toggle('on', m==='reel');
+  document.getElementById('lg-lit').textContent = m==='reel' ? 'parcours réel du projet' : 'votre parcours';
+  const n=document.getElementById('notice');
+  n.style.display = (m==='reel' && !CHEMIN_REEL.length) ? 'block' : 'none';
+  draw();
+}
+document.getElementById('t-salle').addEventListener('click',()=>setMode('salle'));
+document.getElementById('t-reel').addEventListener('click',()=>setMode('reel'));
+setMode('salle');
+document.addEventListener('keydown',e=>{ if(document.getElementById('pop').classList.contains('on')){ if(e.key==='Escape'||e.key===' '||e.key==='Enter'){ e.preventDefault(); closePop(); } return; } if(e.key==='t'||e.key==='T'){ setMode(MODE==='salle'?'reel':'salle'); return; } if(e.key==='Enter'||e.key===' '||e.key==='ArrowRight'){ e.preventDefault(); location.href='refonte.html'; } });
 </script>
 </body>
 </html>
