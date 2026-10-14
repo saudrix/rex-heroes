@@ -78,6 +78,7 @@
   .path b{color:var(--paint)}
   .next{display:inline-flex;align-items:center;gap:.5em;background:var(--paint);color:var(--sign-black);font-weight:800;letter-spacing:.04em;border:none;cursor:pointer;padding:.62em 1.25em;border-radius:12px;font-size:clamp(1.05rem,2.4vh,1.45rem);white-space:nowrap}
   .next:hover{filter:brightness(1.06)}
+  .next:disabled{opacity:.45;cursor:not-allowed;filter:none}
   .hint{color:var(--muted);font-size:clamp(.72rem,1.6vh,.98rem);white-space:nowrap}
   kbd{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);border-radius:5px;padding:.04em .45em}
 
@@ -241,8 +242,8 @@
     d.innerHTML=`<div class="hd"><span class="bdg">${i+1}</span><span class="lab">${c.label}</span></div>`+
       `<div class="res"><span class="track"><span class="fill" id="fill-${i}"></span></span><span class="cnt" id="cnt-${i}">0</span></div>`;
     choixEl.appendChild(d); });
-  const voteUrl=(REX.site||location.origin)+'/vote/'+s+'?r='+round;
-  document.getElementById('voteurl').textContent='/vote/'+s;
+  const voteUrl=(REX.site||location.origin)+'/votant.html?s='+s+'&r='+round;
+  document.getElementById('voteurl').textContent='votant.html?s='+s;
   if(window.QRCode){ try{ new QRCode(document.getElementById('qr'),{text:voteUrl,width:172,height:172,colorDark:'#141414',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.M}); }catch(e){} }
 
   let tally=data.choix.map(()=>0);
@@ -252,8 +253,10 @@
       document.getElementById('fill-'+i).style.width=pct+'%';
       document.getElementById('cnt-'+i).textContent=tally[i]+(total?('  '+pct+'%'):'');
       choixEl.children[i].classList.toggle('lead',total>0&&i===lead); });
-    nextBtn.textContent='Slide suivante → '+(total?('choix '+(lead+1)):''); nextBtn.dataset.lead=lead; }
-  function act(){ const lead=parseInt(nextBtn.dataset.lead||'0',10); const c=data.choix[lead]; goTo(c.target,c); }
+    nextBtn.disabled = total===0;
+    nextBtn.textContent = total ? ('Slide suivante → choix '+(lead+1)) : 'En attente de votes…';
+    nextBtn.dataset.lead=lead; }
+  function act(){ if(tally.reduce((a,b)=>a+b,0)===0) return; const lead=parseInt(nextBtn.dataset.lead||'0',10); const c=data.choix[lead]; goTo(c.target,c); }
   nextBtn.addEventListener('click',act);
   document.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); act(); }});
   refresh();
