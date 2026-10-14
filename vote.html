@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vote, ce REX dont vous etes le heros</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=IM+Fell+English+SC&family=JetBrains+Mono:wght@400;700&family=Pirata+One&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root{
+    --encre:#120e1f; --encre-2:#1c1630; --encre-noir:#0a0712;
+    --parch:#e7dabb; --parch-2:#cbb98f; --texte:#2a2016; --texte-doux:#5a4a34;
+    --rouge:#c1341f; --rouge-fonce:#8e2317;
+    --or:#d8a94a; --or-sombre:#b8862f; --ia:#2c7a6e; --ia-clair:#57b3a4;
+    --creme:#f3e9cf;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:radial-gradient(1100px 700px at 50% -8%, #241b39, rgba(36,27,57,0) 60%), var(--encre-noir);
+    color:var(--parch); font-family:"EB Garamond",Georgia,serif; line-height:1.5;
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:clamp(16px,3vw,40px)}
+  a{color:var(--ia-clair)}
+  .switch{position:fixed;top:10px;right:12px;z-index:20;font-family:"JetBrains Mono",monospace;font-size:.72rem}
+  .switch a{display:inline-block;padding:.4em .7em;border:1px solid rgba(231,218,187,.3);border-radius:999px;color:var(--parch-2);text-decoration:none;margin-left:.3em;background:rgba(10,7,18,.5)}
+
+  /* Banniere config */
+  .setup{max-width:760px;margin:6vh auto;padding:1.6rem 1.8rem;border:1px solid var(--rouge);border-radius:8px;background:rgba(193,52,31,.08)}
+  .setup h2{font-family:"Pirata One",serif;color:var(--rouge);margin:.2rem 0 1rem;font-size:1.8rem}
+  .setup code{font-family:"JetBrains Mono",monospace;background:rgba(0,0,0,.35);padding:.1em .4em;border-radius:4px;color:var(--creme)}
+
+  /* ===== PRESENTATEUR : une diapo 16/9 ===== */
+  .slide{
+    container-type:inline-size; position:relative; aspect-ratio:16/9; width:100%;
+    background:radial-gradient(130% 130% at 100% 0%, rgba(0,0,0,.06), rgba(0,0,0,0) 55%), var(--parch);
+    color:var(--texte); border-radius:4px; overflow:hidden;
+    box-shadow:0 30px 70px -30px rgba(0,0,0,.9), inset 0 0 0 1px rgba(42,32,22,.14);
+  }
+  .slide::after{content:"";position:absolute;inset:2.4cqw;border:1px solid rgba(42,32,22,.28);border-radius:2px;pointer-events:none}
+  .pad{position:absolute;inset:5cqw;display:flex;flex-direction:column}
+  .s-kicker{font-family:"IM Fell English SC",serif;text-transform:uppercase;letter-spacing:.22em;font-size:1.9cqw;color:var(--rouge-fonce);margin:0 0 1cqw}
+  .s-titre{font-family:"Pirata One",serif;font-size:6.2cqw;line-height:.98;margin:0 0 .4cqw;color:var(--texte)}
+  .s-sous{font-size:2.5cqw;color:var(--texte-doux);margin:0 0 2cqw}
+
+  .corps{display:grid;grid-template-columns:1fr 26cqw;gap:4cqw;flex:1;min-height:0}
+  .options{display:flex;flex-direction:column;justify-content:center;gap:3cqw}
+  .opt{display:grid;grid-template-columns:auto 1fr;gap:1.4cqw 2cqw;align-items:center}
+  .opt .puce{grid-row:1/3;font-family:"Pirata One",serif;font-size:6cqw;line-height:1;width:7cqw;text-align:center}
+  .opt.A .puce{color:var(--or-sombre)} .opt.B .puce{color:var(--ia)}
+  .opt .lib{font-size:2.6cqw;font-weight:600;align-self:end}
+  .opt .desc{grid-column:2;font-size:1.9cqw;color:var(--texte-doux);align-self:start;margin-top:-.4cqw}
+  .barre{grid-column:2;height:4cqw;background:rgba(42,32,22,.12);border:.3cqw solid rgba(42,32,22,.45);border-radius:999px;overflow:hidden;position:relative}
+  .barre > span{display:block;height:100%;width:0;transition:width .6s cubic-bezier(.22,1,.36,1)}
+  .opt.A .barre > span{background:linear-gradient(90deg,var(--or-sombre),var(--or))}
+  .opt.B .barre > span{background:linear-gradient(90deg,var(--ia),var(--ia-clair))}
+  .chiffres{grid-column:2;display:flex;justify-content:space-between;font-family:"JetBrains Mono",monospace;font-size:2cqw;color:var(--texte-doux)}
+  .chiffres .pct{font-size:2.8cqw;color:var(--texte);font-weight:700}
+
+  .pan-qr{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+    background:rgba(255,255,255,.3);border:1px solid rgba(42,32,22,.28);border-radius:3px;padding:2.4cqw}
+  .pan-qr .consigne{font-family:"IM Fell English SC",serif;text-transform:uppercase;letter-spacing:.14em;font-size:1.8cqw;color:var(--rouge-fonce);margin-bottom:1.4cqw}
+  #qr{width:16cqw;height:16cqw;background:#fff;padding:1cqw;border-radius:4px;display:flex;align-items:center;justify-content:center}
+  #qr img,#qr canvas{width:100%!important;height:100%!important}
+  .pan-qr .lien{margin-top:1.2cqw;font-family:"JetBrains Mono",monospace;font-size:1.4cqw;color:var(--texte-doux);word-break:break-all}
+  .pan-qr .total{margin-top:1.4cqw;font-family:"IM Fell English SC",serif;font-size:2.2cqw;color:var(--texte)}
+
+  .pied{display:flex;justify-content:space-between;align-items:center;margin-top:1.6cqw}
+  .pied .live{font-family:"JetBrains Mono",monospace;font-size:1.6cqw;color:var(--texte-doux);display:flex;align-items:center;gap:.6cqw}
+  .dot{width:1.2cqw;height:1.2cqw;border-radius:50%;background:var(--ia);box-shadow:0 0 0 0 rgba(44,122,110,.6);animation:pulse 2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(44,122,110,.5)}70%{box-shadow:0 0 0 1.4cqw rgba(44,122,110,0)}100%{box-shadow:0 0 0 0 rgba(44,122,110,0)}}
+  .btn-reset{font-family:"IM Fell English SC",serif;font-size:1.6cqw;color:var(--rouge-fonce);background:none;border:1px solid var(--rouge-fonce);border-radius:999px;padding:.6cqw 1.4cqw;cursor:pointer}
+  .btn-reset:hover{background:var(--rouge-fonce);color:var(--parch)}
+
+  /* ===== VOTANT : carte telephone ===== */
+  .voter{max-width:460px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;justify-content:center;gap:1.1rem;padding:24px 16px}
+  .voter .eyebrow{font-family:"IM Fell English SC",serif;text-transform:uppercase;letter-spacing:.2em;font-size:.8rem;color:var(--ia-clair);text-align:center}
+  .voter h1{font-family:"Pirata One",serif;font-weight:400;font-size:2rem;line-height:1.02;margin:0;text-align:center;color:var(--creme);text-wrap:balance}
+  .voter .q{text-align:center;color:var(--parch-2);margin:.2rem 0 .4rem}
+  .vbtn{display:flex;gap:1rem;align-items:flex-start;width:100%;text-align:left;cursor:pointer;
+    background:linear-gradient(180deg,var(--parch),var(--parch-2));color:var(--texte);
+    border:2px solid transparent;border-radius:10px;padding:1rem 1.1rem;font:inherit;
+    box-shadow:0 10px 24px -14px rgba(0,0,0,.8);transition:transform .12s ease,border-color .15s ease}
+  .vbtn:active{transform:scale(.98)}
+  .vbtn .p{font-family:"Pirata One",serif;font-size:2.1rem;line-height:1}
+  .vbtn[data-k="A"] .p{color:var(--or-sombre)} .vbtn[data-k="B"] .p{color:var(--ia)}
+  .vbtn .t{font-weight:600;font-size:1.1rem}
+  .vbtn .d{font-size:.9rem;color:var(--texte-doux);margin-top:.15rem}
+  .vbtn.chosen{border-color:var(--rouge)}
+  .vbtn.chosen .t::after{content:" (ton choix)";color:var(--rouge);font-family:"IM Fell English SC",serif;font-weight:400;font-size:.85rem}
+  .vstatus{text-align:center;min-height:1.4em;font-family:"JetBrains Mono",monospace;font-size:.85rem;color:var(--ia-clair)}
+  .vnote{text-align:center;font-size:.8rem;color:var(--texte-doux)}
+
+  [hidden]{display:none!important}
+  @container (max-width:560px){ /* presenter sur ecran etroit */
+    .corps{grid-template-columns:1fr;gap:2cqw}
+    .pan-qr{display:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="switch">
+  <a href="#present" id="toPresent">Ecran</a>
+  <a href="#vote" id="toVote">Telephone</a>
+</div>
+
+<!-- Banniere affichee tant que la config Firebase n'est pas collee -->
+<div class="wrap" id="setup" hidden>
+  <div class="setup">
+    <h2>Derniere etape : brancher Firebase</h2>
+    <p>Colle ta config Firebase dans le bloc <code>firebaseConfig</code> en haut du fichier (entre les balises repere), puis redeploie. Les etapes completes sont dans le message de Simon.</p>
+  </div>
+</div>
+
+<!-- ===== VUE PRESENTATEUR ===== -->
+<div class="wrap" id="view-present" hidden>
+  <div class="slide">
+    <div class="pad">
+      <p class="s-kicker">Chapitre 2, un carrefour &nbsp;&middot;&nbsp; la salle vote</p>
+      <h2 class="s-titre">Par ou attaquer la refonte ?</h2>
+      <p class="s-sous">Refonte du module de facturation. Le budget n'en couvre qu'un pour la V1.</p>
+
+      <div class="corps">
+        <div class="options">
+          <div class="opt A">
+            <div class="puce">A</div>
+            <div class="lib" id="libA">Le moteur de calcul d'abord</div>
+            <div class="desc" id="descA">Le coeur, invisible mais risque. On securise la logique avant tout.</div>
+            <div class="barre"><span id="barA"></span></div>
+            <div class="chiffres"><span id="cntA">0 voix</span><span class="pct" id="pctA">0%</span></div>
+          </div>
+          <div class="opt B">
+            <div class="puce">B</div>
+            <div class="lib" id="libB">L'ecran de facturation d'abord</div>
+            <div class="desc" id="descB">Visible, rassurant pour le client. La valeur se voit vite.</div>
+            <div class="barre"><span id="barB"></span></div>
+            <div class="chiffres"><span id="cntB">0 voix</span><span class="pct" id="pctB">0%</span></div>
+          </div>
+        </div>
+
+        <div class="pan-qr">
+          <div class="consigne">Scanne pour voter</div>
+          <div id="qr"></div>
+          <div class="lien" id="lien"></div>
+          <div class="total" id="total">0 vote</div>
+        </div>
+      </div>
+
+      <div class="pied">
+        <span class="live"><span class="dot"></span> <span id="liveTxt">en direct</span></span>
+        <button class="btn-reset" id="reset">Nouvelle manche</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== VUE VOTANT ===== -->
+<div class="voter" id="view-vote" hidden>
+  <div class="eyebrow">Ton choix, heros</div>
+  <h1>Par ou attaquer la refonte ?</h1>
+  <p class="q">Le module de facturation. On ne peut en faire qu'un pour la V1.</p>
+
+  <button class="vbtn" data-k="A">
+    <span class="p">A</span>
+    <span><span class="t" id="vlibA">Le moteur de calcul d'abord</span><span class="d">Le coeur, invisible mais risque.</span></span>
+  </button>
+  <button class="vbtn" data-k="B">
+    <span class="p">B</span>
+    <span><span class="t" id="vlibB">L'ecran de facturation d'abord</span><span class="d">Visible, rassurant pour le client.</span></span>
+  </button>
+
+  <div class="vstatus" id="vstatus">Connexion...</div>
+  <div class="vnote">Un seul vote par personne, tu peux en changer.</div>
+</div>
+
+<script type="module">
+/* =======================================================================
+   >>> COLLE ICI TA CONFIG FIREBASE (Console Firebase > Parametres projet)
+   ======================================================================= */
+const firebaseConfig = {
+  apiKey: "AIzaSyD4cdrYbLHnfykd_4iVKTWS12mT7QeVAbo",
+  authDomain: "rexheroes.firebaseapp.com",
+  projectId: "rexheroes",
+  storageBucket: "rexheroes.firebasestorage.app",
+  messagingSenderId: "75737820499",
+  appId: "1:75737820499:web:24619eeda46d47509505a6",
+  measurementId: "G-2VWJ5MNC50"
+};
+/* ======================================================================= */
+
+const POLL_ID = "refonte-facturation";   // change ce nom pour repartir a zero
+const OPTIONS = { A: "A", B: "B" };
+
+// --- Routage de role (present / vote) ---
+function role(){ return location.hash.toLowerCase().includes("vote") ? "vote" : "present"; }
+function applyRole(){
+  const r = role();
+  document.getElementById("view-present").hidden = (r!=="present");
+  document.getElementById("view-vote").hidden = (r!=="vote");
+}
+window.addEventListener("hashchange", applyRole);
+applyRole();
+
+// --- QR + lien (vue presentateur) ---
+function voterUrl(){ return location.origin + location.pathname + "#vote"; }
+if(role()==="present"){
+  try{
+    new QRCode(document.getElementById("qr"), { text: voterUrl(), width: 320, height: 320,
+      colorDark:"#120e1f", colorLight:"#ffffff", correctLevel: QRCode.CorrectLevel.M });
+  }catch(e){}
+  document.getElementById("lien").textContent = voterUrl().replace(/^https?:\/\//,"");
+}
+
+// --- Garde-fou config ---
+if(String(firebaseConfig.apiKey).includes("COLLE-ICI")){
+  document.getElementById("setup").hidden = false;
+  document.getElementById("view-present").hidden = true;
+  document.getElementById("view-vote").hidden = true;
+}else{
+  boot();
+}
+
+async function boot(){
+  const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+  const { getAuth, signInAnonymously, onAuthStateChanged } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
+  const { getFirestore, doc, collection, onSnapshot, setDoc, getDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const fdb = getFirestore(app);
+  const pollRef = doc(fdb, "polls", POLL_ID);
+
+  let uid = null, round = 1, unsubVotes = null, myChoice = null;
+  const vstatus = document.getElementById("vstatus");
+
+  signInAnonymously(auth).catch(err=>{
+    if(vstatus) vstatus.textContent = "Active l'authentification anonyme dans Firebase.";
+    console.error(err);
+  });
+
+  onAuthStateChanged(auth, async (u)=>{
+    if(!u) return;
+    uid = u.uid;
+    // cree le doc du sondage s'il n'existe pas
+    try{
+      const s = await getDoc(pollRef);
+      if(!s.exists()) await setDoc(pollRef, { round: 1, createdAt: serverTimestamp() });
+    }catch(e){ console.error(e); }
+    // suit la manche courante
+    onSnapshot(pollRef, (s)=>{
+      const r = (s.data() && s.data().round) || 1;
+      if(r !== round || !unsubVotes){ round = r; subscribeVotes(); }
+    });
+    if(role()==="vote" && vstatus) vstatus.textContent = "A toi de voter.";
+    wireVoteButtons();
+    wireReset();
+  });
+
+  function votesCol(){ return collection(fdb, "polls", POLL_ID, "rounds", String(round), "votes"); }
+
+  function subscribeVotes(){
+    if(unsubVotes) unsubVotes();
+    unsubVotes = onSnapshot(votesCol(), (qs)=>{
+      let a=0,b=0; myChoice=null;
+      qs.forEach(d=>{
+        const c = d.data().choice;
+        if(c==="A") a++; else if(c==="B") b++;
+        if(d.id===uid) myChoice = c;
+      });
+      renderTally(a,b);
+      renderMyChoice();
+    }, (err)=>{ console.error(err); if(vstatus) vstatus.textContent="Souci de connexion a la base."; });
+  }
+
+  function renderTally(a,b){
+    const total = a+b;
+    const pa = total? Math.round(a/total*100):0;
+    const pb = total? 100-pa:0;
+    if(role()==="present"){
+      document.getElementById("barA").style.width = pa+"%";
+      document.getElementById("barB").style.width = pb+"%";
+      document.getElementById("cntA").textContent = a+(a>1?" voix":" voix");
+      document.getElementById("cntB").textContent = b+" voix";
+      document.getElementById("pctA").textContent = pa+"%";
+      document.getElementById("pctB").textContent = pb+"%";
+      document.getElementById("total").textContent = total+(total>1?" votes":" vote");
+    }
+  }
+
+  function renderMyChoice(){
+    if(role()!=="vote") return;
+    document.querySelectorAll(".vbtn").forEach(btn=>{
+      btn.classList.toggle("chosen", btn.dataset.k===myChoice);
+    });
+    if(myChoice && vstatus) vstatus.textContent = "Vote enregistre. Merci, heros.";
+  }
+
+  function wireVoteButtons(){
+    document.querySelectorAll(".vbtn").forEach(btn=>{
+      btn.onclick = async ()=>{
+        if(!uid) return;
+        const choice = btn.dataset.k;
+        if(vstatus) vstatus.textContent = "Envoi...";
+        try{
+          await setDoc(doc(fdb,"polls",POLL_ID,"rounds",String(round),"votes",uid),
+                       { choice, at: serverTimestamp() });
+        }catch(e){ console.error(e); if(vstatus) vstatus.textContent="Echec du vote, reessaie."; }
+      };
+    });
+  }
+
+  function wireReset(){
+    const r = document.getElementById("reset");
+    if(r) r.onclick = async ()=>{
+      try{ await setDoc(pollRef, { round: round+1, resetAt: serverTimestamp() }, { merge:true }); }
+      catch(e){ console.error(e); }
+    };
+  }
+}
+</script>
+</body>
+</html>
