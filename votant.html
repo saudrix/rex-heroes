@@ -51,6 +51,7 @@
 (function(){
   const qs=new URLSearchParams(location.search);
   const n=parseInt(qs.get('s')||'0',10);
+  const r=parseInt(qs.get('r')||'1',10)||1;
   const data=(window.REX&&REX.slides[n])||null;
   const st=document.getElementById('status');
   if(!data){ document.getElementById('question').textContent='Vote indisponible'; st.textContent='Slide '+n+' inconnue.'; return; }
@@ -65,14 +66,14 @@
     b.addEventListener('click',()=>vote(i)); opts.appendChild(b); btns.push(b);
   });
 
-  let fdbRef=null, uid=null, setDocFn=null, docFn=null, round=1, pending=null, selected=-1;
+  let fdbRef=null, uid=null, setDocFn=null, docFn=null, pending=null, selected=-1;
   function mark(i){ selected=i; btns.forEach((b,j)=>b.classList.toggle('sel',j===i)); }
 
   async function vote(i){
     mark(i);
     if(!fdbRef||!uid){ pending=i; st.textContent='Connexion en cours…'; return; }
     try{
-      await setDocFn(docFn(fdbRef, "polls","slide-"+n,"rounds",String(round),"votes", uid), { choice:i, at:Date.now() });
+      await setDocFn(docFn(fdbRef, "polls","slide-"+n,"rounds",String(r),"votes", uid), { choice:i, at:Date.now() });
       st.textContent='Vote enregistré ✓'; st.className='status ok';
     }catch(e){ st.textContent="Échec de l'envoi, réessayez."; st.className='status'; console.warn(e); }
   }
@@ -81,10 +82,9 @@
     try{
       const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
       const { getAuth, signInAnonymously, onAuthStateChanged } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
-      const { getFirestore, doc, setDoc, onSnapshot } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+      const { getFirestore, doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
       const app=initializeApp(REX.firebase); const auth=getAuth(app);
       docFn=doc; setDocFn=setDoc; fdbRef=getFirestore(app);
-      onSnapshot(doc(getFirestore(app),'control','live'), d=>{ round=(d.exists()&&d.data().round)||1; });
       onAuthStateChanged(auth, u=>{ if(u){ uid=u.uid; st.textContent='Prêt à voter'; if(pending!=null){ const p=pending; pending=null; vote(p);} } });
       await signInAnonymously(auth);
     }catch(e){ st.textContent='Connexion impossible (réseau ?)'; console.warn(e); }

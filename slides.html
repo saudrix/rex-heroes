@@ -58,7 +58,6 @@
   if(window.REX) order.forEach(k=>{ const d=REX.slides[k]; if(!d) return; const [t,cls]=typeOf(d);
     rows.push({num:d.node, titre:d.chapitre||('Slide '+k), pill:t, pcls:cls, file:'slide.html?s='+k}); });
   rows.push({num:'R',titre:'Récap, carte des opérations',pill:'récap',pcls:'t-recap',file:'recap.html'});
-  rows.push({num:'▶',titre:'Vote live (ancien POC)',pill:'vote',pcls:'t-vote',file:'vote.html#present'});
   rows.forEach(r=>{ const el=document.createElement('div'); el.className='brow';
     el.innerHTML=`<div class="num">${r.num}</div><div class="titre">${r.titre}</div>`+
       `<div><span class="pill ${r.pcls}">${r.pill}</span></div><div><a class="go" href="${r.file}">OUVRIR</a></div>`;
@@ -67,18 +66,13 @@
   // reset : vide le chemin local + relance un round de votes
   const toast=document.getElementById('toast');
   function showToast(t){ toast.textContent=t; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),1800); }
-  document.getElementById('reset').addEventListener('click', async ()=>{
-    try{ localStorage.removeItem('rex_chemin'); localStorage.removeItem('rex_choix'); }catch(e){}
+  document.getElementById('reset').addEventListener('click', ()=>{
     try{
-      const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
-      const { getAuth, signInAnonymously } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
-      const { getFirestore, doc, getDoc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
-      const app=initializeApp(REX.firebase); await signInAnonymously(getAuth(app));
-      const db=getFirestore(app), ref=doc(db,'control','live');
-      const s=await getDoc(ref); const r=(s.exists()&&s.data().round)||1;
-      await setDoc(ref,{round:r+1},{merge:true});
-      showToast('Parcours et votes réinitialisés ✓');
-    }catch(e){ showToast('Chemin vidé (votes : réseau indispo)'); console.warn(e); }
+      let r=1; try{ r=parseInt(JSON.parse(localStorage.getItem('rex_round'))||1,10)||1; }catch(e){}
+      localStorage.removeItem('rex_chemin'); localStorage.removeItem('rex_choix');
+      localStorage.setItem('rex_round', JSON.stringify(r+1));
+      showToast('Parcours et votes réinitialisés ✓ (round '+(r+1)+')');
+    }catch(e){ showToast('Réinitialisation faite'); }
   });
 </script>
 </body>
