@@ -5,52 +5,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>REX héros · Toutes les slides</title>
 <style>
-  :root{
-    --asphalt:#3a3a3d; --paint:#f2c400; --sign-black:#141414;
-    --cadrage:#2f74c0; --over:#c0392b; --tada:#27ae60; --bof:#9aa0a6;
-    --txt:#f4efe2; --muted:#b9b3a3; --board:#0c0c0e; --row:#15151a;
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0;min-height:100%}
-  body{
-    min-height:100vh; color:var(--txt);
-    font-family:"Arial Narrow","Roboto Condensed",Arial,system-ui,sans-serif;
-    background-color:#565652;
-    background-image:
-      radial-gradient(1400px 820px at 50% 30%, rgba(255,255,255,.05), rgba(0,0,0,0) 55%),
-      linear-gradient(rgba(24,24,22,.5), rgba(24,24,22,.62)),
-      repeating-linear-gradient(0deg,  rgba(0,0,0,.16) 0 2px, transparent 2px 150px),
-      repeating-linear-gradient(90deg, rgba(0,0,0,.16) 0 2px, transparent 2px 198px);
-    padding:clamp(1rem,4vh,2.4rem) clamp(1rem,4vw,3rem);
-  }
-  .wrap{max-width:1100px;margin:0 auto}
-  header{display:flex;align-items:center;gap:.9rem;margin-bottom:1.2rem}
-  .tag{background:var(--sign-black);color:var(--paint);border:2px solid var(--paint);
-    border-radius:4px;font-weight:700;letter-spacing:.06em;padding:.18em .6em;font-size:1.2rem}
+  :root{--paint:#f2c400;--sign-black:#141414;--txt:#f5f1e6;--muted:#b9b3a3;--board:#0c0c0e;--row:#15151a;
+    --cadrage:#8fc0f5;--cap:#6bbf73;--over:#e0533c;--tada:#58d98c;--bof:#c3c7cc}
+  *{box-sizing:border-box} html,body{margin:0;min-height:100%}
+  body{min-height:100vh;color:var(--txt);font-family:"Arial Narrow","Roboto Condensed",Arial,system-ui,sans-serif;
+    background:radial-gradient(1400px 820px at 50% 20%, rgba(255,210,120,.12), rgba(0,0,0,0) 55%),
+      linear-gradient(180deg,#0a1730,#122a4f 70%,#0c1d38);padding:clamp(1rem,4vh,2.2rem) clamp(1rem,4vw,3rem)}
+  .wrap{max-width:1120px;margin:0 auto}
+  header{display:flex;align-items:center;gap:.9rem;margin-bottom:1.2rem;flex-wrap:wrap}
+  .tag{background:var(--sign-black);color:var(--paint);border:2px solid var(--paint);border-radius:4px;font-weight:700;letter-spacing:.06em;padding:.18em .6em;font-size:1.2rem}
   header h1{margin:0;text-transform:uppercase;letter-spacing:.04em;font-size:clamp(1.1rem,3vw,1.7rem)}
-  header .sub{margin-left:auto;color:var(--muted);font-size:.9rem}
-  .board{background:var(--board);border:2px solid rgba(242,196,0,.3);border-radius:10px;overflow:hidden;
-    box-shadow:0 18px 50px rgba(0,0,0,.45)}
-  .brow{display:grid;grid-template-columns:72px 1fr 120px 118px 92px;gap:.6rem;align-items:center;
-    padding:.8rem 1rem;border-bottom:1px solid rgba(255,255,255,.06)}
-  .bhead{color:var(--paint);font-weight:700;letter-spacing:.14em;font-size:.78rem;text-transform:uppercase;
-    background:#000}
+  .reset{margin-left:auto;display:inline-flex;align-items:center;gap:.5em;background:transparent;color:var(--paint);
+    border:2px solid var(--paint);border-radius:10px;font-weight:800;cursor:pointer;padding:.5em 1em;font-size:1rem}
+  .reset:hover{background:rgba(242,196,0,.12)}
+  .board{background:var(--board);border:2px solid rgba(242,196,0,.3);border-radius:10px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.45)}
+  .brow{display:grid;grid-template-columns:72px 1fr 130px 92px;gap:.6rem;align-items:center;padding:.7rem 1rem;border-bottom:1px solid rgba(255,255,255,.06)}
+  .bhead{color:var(--paint);font-weight:700;letter-spacing:.14em;font-size:.78rem;text-transform:uppercase;background:#000}
   .brow:nth-child(even):not(.bhead){background:var(--row)}
-  .num{font-weight:700;font-size:1.3rem;color:var(--paint);text-align:center;
-    font-variant-numeric:tabular-nums}
+  .num{font-weight:800;font-size:1.15rem;color:var(--paint);text-align:center;font-variant-numeric:tabular-nums}
   .titre{font-size:1.05rem}
-  .pill{justify-self:start;font-size:.72rem;font-weight:700;letter-spacing:.06em;padding:.22em .6em;
-    border-radius:999px;border:1px solid}
-  .t-recap{color:#ffe07a;border-color:#ffe07a}
-  .t-vote{color:#8fc0f5;border-color:#8fc0f5}
-  .t-choix{color:#f4efe2;border-color:#f4efe2}
-  .t-annexe{color:#b9b3a3;border-color:#b9b3a3}
-  .etat{font-size:.8rem;letter-spacing:.05em}
-  .e-ok{color:#58d98c}.e-live{color:#58d98c}.e-todo{color:#b9b3a3}
-  .go{justify-self:end;text-decoration:none;font-weight:700;letter-spacing:.05em;
-    background:var(--paint);color:#141414;padding:.4em .9em;border-radius:6px;font-size:.85rem}
-  .go.dis{background:#3a3a3d;color:#6f6f6f;pointer-events:none}
+  .pill{justify-self:start;font-size:.7rem;font-weight:700;letter-spacing:.06em;padding:.22em .6em;border-radius:999px;border:1px solid}
+  .t-titre{color:#ffe07a;border-color:#ffe07a}.t-choix{color:#f4efe2;border-color:#f4efe2}
+  .t-transition{color:#b9c6da;border-color:#b9c6da}.t-condition{color:var(--cadrage);border-color:var(--cadrage)}
+  .t-fin{color:var(--tada);border-color:var(--tada)}.t-recap{color:#ffd21e;border-color:#ffd21e}.t-vote{color:#8fc0f5;border-color:#8fc0f5}
+  .go{justify-self:end;text-decoration:none;font-weight:800;letter-spacing:.05em;background:var(--paint);color:#141414;padding:.4em .9em;border-radius:6px;font-size:.85rem}
   .note{color:var(--muted);font-size:.82rem;margin-top:1rem;line-height:1.5}
+  .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#141414;color:var(--paint);border:1px solid var(--paint);
+    border-radius:10px;padding:.7em 1.2em;font-weight:700;opacity:0;transition:opacity .25s;pointer-events:none}
+  .toast.show{opacity:1}
 </style>
 </head>
 <body>
@@ -58,33 +40,46 @@
     <header>
       <span class="tag">/SLIDES</span>
       <h1>Ce REX dont vous êtes les héros</h1>
-      <span class="sub">version de travail</span>
+      <button class="reset" id="reset">↺ Réinitialiser parcours + votes</button>
     </header>
     <div class="board" id="board">
-      <div class="brow bhead"><div>N°</div><div>Intitulé</div><div>Type</div><div>État</div><div></div></div>
+      <div class="brow bhead"><div>Code</div><div>Intitulé</div><div>Type</div><div></div></div>
     </div>
-    <p class="note">Index de travail, mis à jour au fur et à mesure. Chaque ligne ouvre la slide en plein écran.</p>
+    <p class="note">Index de travail. Les slides sont générées depuis le schéma, textes provisoires. « Réinitialiser » vide le chemin parcouru et relance un nouveau tour de votes.</p>
   </div>
+  <div class="toast" id="toast">Réinitialisé</div>
+
+<script src="/slides-data.js"></script>
 <script>
-// Manifeste des slides : on ajoute une ligne ici à chaque nouvelle slide.
-const SLIDES = [
-  {num:'—',  titre:'Titre, embarquement (accueil)',  type:'titre', tcls:'t-annexe', etat:'PRÊT',     ecls:'e-ok',   file:'/start'},
-  {num:'S0', titre:'Le brief, première décision',    type:'choix', tcls:'t-choix',  etat:'PRÊT',     ecls:'e-ok',   file:'slide.html?s=0'},
-  {num:'R',  titre:'Récap, carte des opérations',    type:'récap', tcls:'t-recap',  etat:'PRÊT',     ecls:'e-ok',   file:'recap.html'},
-  {num:'▶',  titre:'Vote live (ancien POC)',         type:'vote',  tcls:'t-vote',   etat:'EN LIGNE', ecls:'e-live', file:'vote.html#present'},
-];
-const board=document.getElementById('board');
-SLIDES.forEach(s=>{
-  const r=document.createElement('div'); r.className='brow';
-  const dis = s.file ? '' : ' dis';
-  r.innerHTML =
-    `<div class="num">${s.num}</div>`+
-    `<div class="titre">${s.titre}</div>`+
-    `<div><span class="pill ${s.tcls}">${s.type}</span></div>`+
-    `<div class="etat ${s.ecls}">${s.etat}</div>`+
-    `<div><a class="go${dis}" href="${s.file||'#'}">OUVRIR</a></div>`;
-  board.appendChild(r);
-});
+  const board=document.getElementById('board');
+  function typeOf(d){ if(d.fin) return ['fin','t-fin']; if(d.gate) return ['condition','t-condition']; if(d.forcedTarget) return ['transition','t-transition']; return ['choix','t-choix']; }
+  const rows=[{num:'—',titre:'Titre, embarquement (accueil)',pill:'titre',pcls:'t-titre',file:'/start'}];
+  const order=['0','1','2','3','4','5','6','7','9','10','11','13','14','15','17','18','GO','GO2','FINTADA','FINBOF'];
+  if(window.REX) order.forEach(k=>{ const d=REX.slides[k]; if(!d) return; const [t,cls]=typeOf(d);
+    rows.push({num:d.node, titre:d.chapitre||('Slide '+k), pill:t, pcls:cls, file:'slide.html?s='+k}); });
+  rows.push({num:'R',titre:'Récap, carte des opérations',pill:'récap',pcls:'t-recap',file:'recap.html'});
+  rows.push({num:'▶',titre:'Vote live (ancien POC)',pill:'vote',pcls:'t-vote',file:'vote.html#present'});
+  rows.forEach(r=>{ const el=document.createElement('div'); el.className='brow';
+    el.innerHTML=`<div class="num">${r.num}</div><div class="titre">${r.titre}</div>`+
+      `<div><span class="pill ${r.pcls}">${r.pill}</span></div><div><a class="go" href="${r.file}">OUVRIR</a></div>`;
+    board.appendChild(el); });
+
+  // reset : vide le chemin local + relance un round de votes
+  const toast=document.getElementById('toast');
+  function showToast(t){ toast.textContent=t; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),1800); }
+  document.getElementById('reset').addEventListener('click', async ()=>{
+    try{ localStorage.removeItem('rex_chemin'); localStorage.removeItem('rex_choix'); }catch(e){}
+    try{
+      const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+      const { getAuth, signInAnonymously } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
+      const { getFirestore, doc, getDoc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+      const app=initializeApp(REX.firebase); await signInAnonymously(getAuth(app));
+      const db=getFirestore(app), ref=doc(db,'control','live');
+      const s=await getDoc(ref); const r=(s.exists()&&s.data().round)||1;
+      await setDoc(ref,{round:r+1},{merge:true});
+      showToast('Parcours et votes réinitialisés ✓');
+    }catch(e){ showToast('Chemin vidé (votes : réseau indispo)'); console.warn(e); }
+  });
 </script>
 </body>
 </html>
