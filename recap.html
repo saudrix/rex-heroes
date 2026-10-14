@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>REX héros · Récap tarmac</title>
+<style>
+  :root{
+    /* palette mode aéroport, réutilisable sur toutes les slides */
+    --asphalt:#3a3a3d; --asphalt2:#2c2c2f;
+    --paint:#f2c400;            /* jaune taxiway */
+    --paint-dim:#7d7956;        /* peinture usée (autres chemins) */
+    --sign-yellow:#f2c400; --sign-black:#141414;
+    --cadrage:#2f74c0; --cadrage-edge:#8fc0f5;   /* code cadrage (bleu) */
+    --over:#c0392b;             /* game over */
+    --tada:#27ae60;             /* victoire */
+    --bof:#9aa0a6;              /* fin bof */
+    --txt:#f4efe2; --muted:#b9b3a3;
+    --lit:#ffd21e;              /* chemin emprunté, surbrillance */
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    height:100vh; display:flex; flex-direction:column; overflow:hidden;
+    color:var(--txt);
+    font-family:"Arial Narrow","Roboto Condensed",Arial,system-ui,sans-serif;
+    background-color:#565652;                 /* béton clair */
+    background-image:
+      radial-gradient(1400px 820px at 50% 42%, rgba(255,255,255,.05), rgba(0,0,0,0) 55%),
+      linear-gradient(rgba(24,24,22,.46), rgba(24,24,22,.56)),
+      repeating-linear-gradient(0deg,  rgba(0,0,0,.16) 0 2px, transparent 2px 150px),  /* joints de dalles */
+      repeating-linear-gradient(90deg, rgba(0,0,0,.16) 0 2px, transparent 2px 198px);
+  }
+  header{
+    flex:0 0 auto; display:flex; align-items:center; gap:.9rem;
+    padding:clamp(.5rem,1.4vh,1rem) clamp(1rem,3vw,2.2rem);
+    border-bottom:2px solid rgba(242,196,0,.25);
+    background:rgba(20,20,18,.55);
+  }
+  .tag{
+    background:var(--sign-black); color:var(--sign-yellow);
+    border:2px solid var(--sign-yellow); border-radius:4px;
+    font-weight:700; letter-spacing:.06em;
+    padding:.18em .6em; font-size:clamp(.9rem,2.1vh,1.4rem);
+  }
+  header h1{
+    margin:0; font-weight:700; letter-spacing:.04em;
+    font-size:clamp(1rem,2.4vh,1.6rem); color:var(--txt); text-transform:uppercase;
+  }
+  header .sub{margin-left:auto; color:var(--muted); font-size:clamp(.7rem,1.7vh,1rem); letter-spacing:.05em}
+  .stage{flex:1 1 auto; min-height:0; position:relative}
+  svg{width:100%; height:100%; display:block}
+  footer{
+    flex:0 0 auto; display:flex; flex-wrap:wrap; gap:clamp(.6rem,2vw,1.6rem);
+    align-items:center; justify-content:center;
+    padding:clamp(.4rem,1.2vh,.9rem) 1rem; border-top:2px solid rgba(242,196,0,.25);
+    font-size:clamp(.65rem,1.7vh,1rem); color:var(--muted); letter-spacing:.03em;
+    background:rgba(20,20,18,.55);
+  }
+  .lg{display:inline-flex; align-items:center; gap:.45em}
+  .sw{width:34px; height:0; border-top-width:6px; border-top-style:solid; border-radius:3px; display:inline-block}
+  .box{width:20px; height:14px; border-radius:3px; display:inline-block; border:2px solid}
+</style>
+</head>
+<body>
+  <header>
+    <span class="tag">RÉCAP</span>
+    <h1>Carte des opérations &middot; plan de tarmac</h1>
+    <span class="sub">Ce REX dont vous êtes les héros</span>
+  </header>
+
+  <div class="stage">
+    <svg id="map" viewBox="0 0 1740 900" preserveAspectRatio="xMidYMid meet" aria-label="Carte du parcours">
+      <defs>
+        <marker id="ah-dim" markerWidth="7" markerHeight="7" refX="5.5" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill="var(--paint-dim)"/>
+        </marker>
+        <marker id="ah-lit" markerWidth="8" markerHeight="8" refX="6" refY="3.2" orient="auto">
+          <path d="M0,0 L7,3.2 L0,6.4 Z" fill="var(--lit)"/>
+        </marker>
+        <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur stdDeviation="6" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <g id="edges"></g>
+      <g id="nodes"></g>
+    </svg>
+  </div>
+
+  <footer>
+    <span class="lg"><span class="sw" style="border-top-color:var(--lit);height:0;border-top-width:7px"></span> chemin emprunté</span>
+    <span class="lg"><span class="sw" style="border-top-color:var(--paint-dim)"></span> autres chemins</span>
+    <span class="lg"><span class="box" style="background:var(--sign-yellow);border-color:#caa400"></span> slide</span>
+    <span class="lg"><span class="box" style="background:var(--cadrage);border-color:var(--cadrage-edge)"></span> point de cadrage</span>
+    <span class="lg"><span class="box" style="background:var(--over);border-color:#e06456"></span> game over</span>
+    <span class="lg"><span class="box" style="background:var(--tada);border-color:#58d98c"></span> fin TADA</span>
+    <span class="lg"><span class="box" style="background:var(--bof);border-color:#c3c7cc"></span> fin BOF</span>
+  </footer>
+
+<script>
+const SVGNS="http://www.w3.org/2000/svg";
+// ----- données (mappées sur le schéma définitif S0..S18 + fins) -----
+const N = [
+  {id:'S0',  num:'0',  x:95,  y:460, t:'start', lab:'DÉPART'},
+  {id:'S2',  num:'2',  x:255, y:270, t:'cadrage'},
+  {id:'S1',  num:'1',  x:240, y:655, t:'slide'},
+  {id:'S5',  num:'5',  x:425, y:305, t:'slide'},
+  {id:'S6',  num:'6',  x:585, y:250, t:'cadrage'},
+  {id:'S4',  num:'4',  x:470, y:540, t:'slide'},
+  {id:'GO',  num:'💀', x:470, y:770, t:'over', lab:'BUDGET'},
+  {id:'S3',  num:'3',  x:725, y:470, t:'slide'},
+  {id:'S7',  num:'7',  x:905, y:330, t:'slide'},
+  {id:'S10', num:'10', x:905, y:645, t:'cadrage'},
+  {id:'GO2', num:'💀', x:725, y:780, t:'over', lab:'SANTÉ'},
+  {id:'S11', num:'11', x:1060,y:705, t:'slide'},
+  {id:'S9',  num:'9',  x:1095,y:430, t:'slide'},
+  {id:'S14', num:'14', x:1240,y:730, t:'slide'},
+  {id:'S13', num:'13', x:1275,y:545, t:'cadrage'},
+  {id:'S15', num:'15', x:1430,y:480, t:'slide'},
+  {id:'S17', num:'17', x:1560,y:335, t:'slide'},
+  {id:'S18', num:'18', x:1560,y:625, t:'slide'},
+  {id:'TADA',num:'🎉', x:1655,y:180, t:'tada', lab:'TADA'},
+  {id:'BOF', num:'🏁', x:1655,y:760, t:'bof',  lab:'BOF'},
+];
+const E = [
+  ['S0','S2'],['S0','S1'],
+  ['S1','S3'],['S1','S4'],['S1','S2'],
+  ['S2','S3'],['S2','S5'],
+  ['S5','S6'],['S5','S4'],
+  ['S6','S3'],['S6','S4'],
+  ['S4','S3'],['S4','GO'],
+  ['S3','S7'],['S3','S10'],['S3','GO2'],
+  ['S10','GO2'],['S10','S11'],
+  ['S11','S9'],['S11','S14'],['S11','S15'],
+  ['S7','S9'],['S7','S15'],
+  ['S9','S13'],
+  ['S13','S15'],
+  ['S14','S13'],['S14','S15'],
+  ['S15','S17'],['S15','S18'],
+  ['S17','TADA'],['S17','BOF'],
+  ['S18','BOF'],
+];
+
+// ----- chemin d'exemple en surbrillance (à remplacer par le vrai + celui de la salle) -----
+let CHEMIN = ['S0','S2','S3','S7','S9','S13','S15','S17','TADA'];
+
+// tailles de boîtes
+function dims(t){
+  if(t==='start'||t==='over'||t==='tada'||t==='bof') return {w:120,h:66};
+  return {w:84,h:56};
+}
+const map = {}; N.forEach(n=>{n.d=dims(n.t); map[n.id]=n;});
+
+function edgePt(a,b){ // point sur le bord de la boîte a, en direction de b
+  const dx=b.x-a.x, dy=b.y-a.y;
+  const hw=a.d.w/2+6, hh=a.d.h/2+6;
+  const s=Math.min(hw/Math.max(Math.abs(dx),.001), hh/Math.max(Math.abs(dy),.001));
+  return {x:a.x+dx*s, y:a.y+dy*s};
+}
+function litEdge(a,b){
+  for(let i=0;i<CHEMIN.length-1;i++){ if(CHEMIN[i]===a&&CHEMIN[i+1]===b) return true; }
+  return false;
+}
+const litNode = id => CHEMIN.includes(id);
+
+// ----- tracé des voies -----
+const gE=document.getElementById('edges'), gN=document.getElementById('nodes');
+function mkline(x1,y1,x2,y2,stroke,w,opts={}){
+  const l=document.createElementNS(SVGNS,'line');
+  l.setAttribute('x1',x1);l.setAttribute('y1',y1);l.setAttribute('x2',x2);l.setAttribute('y2',y2);
+  l.setAttribute('stroke',stroke);l.setAttribute('stroke-width',w);l.setAttribute('stroke-linecap','round');
+  if(opts.dash) l.setAttribute('stroke-dasharray',opts.dash);
+  if(opts.op!=null) l.setAttribute('opacity',opts.op);
+  if(opts.marker) l.setAttribute('marker-end',opts.marker);
+  if(opts.filter) l.setAttribute('filter',opts.filter);
+  gE.appendChild(l); return l;
+}
+// voies non empruntées d'abord (sous les autres), puis la voie empruntée au-dessus
+E.forEach(([aId,bId])=>{
+  if(litEdge(aId,bId)) return;
+  const a=map[aId], b=map[bId], p1=edgePt(a,b), p2=edgePt(b,a);
+  mkline(p1.x,p1.y,p2.x,p2.y,'#15150f',6);                               /* liseré foncé (peinture sur béton) */
+  mkline(p1.x,p1.y,p2.x,p2.y,'var(--paint-dim)',3.2,{op:.72,marker:'url(#ah-dim)'}); /* ligne usée */
+});
+E.forEach(([aId,bId])=>{
+  if(!litEdge(aId,bId)) return;
+  const a=map[aId], b=map[bId], p1=edgePt(a,b), p2=edgePt(b,a);
+  mkline(p1.x,p1.y,p2.x,p2.y,'#15150f',11);                              /* liseré */
+  mkline(p1.x,p1.y,p2.x,p2.y,'var(--lit)',7,{marker:'url(#ah-lit)',filter:'url(#glow)'});
+  mkline(p1.x,p1.y,p2.x,p2.y,'#15150f',2.2,{dash:'2 18',op:.8});         /* ticks centerline façon piste */
+});
+
+// ----- boîtes (panneaux / marquages) -----
+function styleFor(t){
+  switch(t){
+    case 'cadrage': return {fill:'var(--cadrage)', stroke:'var(--cadrage-edge)', txt:'#ffffff'};
+    case 'start':   return {fill:'var(--sign-black)', stroke:'var(--sign-yellow)', txt:'var(--sign-yellow)'};
+    case 'over':    return {fill:'var(--over)', stroke:'#e06456', txt:'#ffffff'};
+    case 'tada':    return {fill:'var(--tada)', stroke:'#58d98c', txt:'#06130b'};
+    case 'bof':     return {fill:'var(--bof)', stroke:'#c3c7cc', txt:'#1b1d1f'};
+    default:        return {fill:'var(--sign-yellow)', stroke:'#caa400', txt:'var(--sign-black)'};
+  }
+}
+N.forEach(n=>{
+  const s=styleFor(n.t), lit=litNode(n.id);
+  const g=document.createElementNS(SVGNS,'g');
+  g.setAttribute('transform',`translate(${n.x-n.d.w/2},${n.y-n.d.h/2})`);
+  if(lit) g.setAttribute('filter','url(#glow)');
+
+  if(lit){ // anneau de surbrillance
+    const ring=document.createElementNS(SVGNS,'rect');
+    ring.setAttribute('x',-6);ring.setAttribute('y',-6);
+    ring.setAttribute('width',n.d.w+12);ring.setAttribute('height',n.d.h+12);
+    ring.setAttribute('rx',12);ring.setAttribute('fill','none');
+    ring.setAttribute('stroke','var(--lit)');ring.setAttribute('stroke-width',3);
+    ring.setAttribute('opacity','.9');
+    g.appendChild(ring);
+  }
+  const r=document.createElementNS(SVGNS,'rect');
+  r.setAttribute('width',n.d.w);r.setAttribute('height',n.d.h);
+  r.setAttribute('rx',9);
+  r.setAttribute('fill',s.fill);r.setAttribute('stroke',s.stroke);r.setAttribute('stroke-width',3);
+  g.appendChild(r);
+
+  const hasLab = !!n.lab;
+  const t1=document.createElementNS(SVGNS,'text');
+  t1.setAttribute('x',n.d.w/2);
+  t1.setAttribute('y', hasLab? n.d.h/2-6 : n.d.h/2);
+  t1.setAttribute('text-anchor','middle');t1.setAttribute('dominant-baseline','central');
+  t1.setAttribute('fill',s.txt);
+  t1.setAttribute('font-weight','700');
+  t1.setAttribute('font-size', (n.t==='start'||n.t==='over'||n.t==='tada'||n.t==='bof')?26:30);
+  t1.textContent=n.num;
+  g.appendChild(t1);
+
+  if(hasLab){
+    const t2=document.createElementNS(SVGNS,'text');
+    t2.setAttribute('x',n.d.w/2);t2.setAttribute('y',n.d.h/2+16);
+    t2.setAttribute('text-anchor','middle');t2.setAttribute('dominant-baseline','central');
+    t2.setAttribute('fill',s.txt);t2.setAttribute('font-weight','700');
+    t2.setAttribute('font-size',14);t2.setAttribute('letter-spacing','.08em');
+    t2.textContent=n.lab;
+    g.appendChild(t2);
+  }
+  if(n.t==='cadrage'){ // micro étiquette CADRAGE au-dessus
+    const tc=document.createElementNS(SVGNS,'text');
+    tc.setAttribute('x',n.d.w/2);tc.setAttribute('y',-10);
+    tc.setAttribute('text-anchor','middle');
+    tc.setAttribute('fill','var(--cadrage-edge)');tc.setAttribute('font-size',12);
+    tc.setAttribute('font-weight','700');tc.setAttribute('letter-spacing','.12em');
+    tc.textContent='CADRAGE';
+    g.appendChild(tc);
+  }
+  gN.appendChild(g);
+});
+
+// API pour injecter un chemin plus tard (vrai projet / vote de la salle)
+window.setChemin = function(ids){ CHEMIN = ids||[]; location.reload(); };
+</script>
+</body>
+</html>
