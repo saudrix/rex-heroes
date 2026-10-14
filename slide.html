@@ -43,8 +43,8 @@
   .panel h3{margin:0 0 .6rem;font-size:clamp(.85rem,1.8vh,1.1rem);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
   .gauges{display:flex;flex-direction:column;gap:.6rem}
   .g{display:grid;grid-template-columns:auto 1fr auto;gap:.6rem;align-items:center;font-size:clamp(1rem,2.1vh,1.3rem)}
-  .g .nm{color:#dfe8f5} .g .track{height:12px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden}
-  .g .fill{height:100%;border-radius:999px} .g .val{font-weight:800;font-variant-numeric:tabular-nums;min-width:3.4em;text-align:right}
+  .g .nm{color:#dfe8f5} .g .track{display:block;height:12px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden}
+  .g .fill{display:block;height:100%;border-radius:999px} .g .val{font-weight:800;font-variant-numeric:tabular-nums;min-width:3.4em;text-align:right}
   .g.b .fill{background:var(--paint)} .g.t .fill{background:#57b3a4} .g.s .fill{background:#cf8fb2}
   .explain{color:var(--muted);font-size:clamp(.8rem,1.7vh,1.02rem);line-height:1.45;margin:.6rem 0 0}
   .inv{display:flex;gap:.7rem;margin-top:.8rem}
@@ -62,8 +62,8 @@
   .choice .bdg{font-weight:800;color:var(--sign-black);background:var(--paint);border-radius:7px;padding:.05em .5em;font-size:clamp(1.1rem,2.6vh,1.5rem)}
   .choice .lab{font-size:clamp(1.1rem,2.5vh,1.6rem);font-weight:800;line-height:1.12}
   .choice .res{display:grid;grid-template-columns:1fr auto;gap:.6rem;align-items:center;margin-top:auto}
-  .choice .track{height:16px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden}
-  .choice .fill{height:100%;width:0;background:var(--lit);border-radius:999px;transition:width .4s}
+  .choice .track{display:block;height:16px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden}
+  .choice .fill{display:block;height:100%;width:0;background:var(--lit);border-radius:999px;transition:width .4s}
   .choice .cnt{font-weight:800;font-variant-numeric:tabular-nums;min-width:4em;text-align:right;font-size:clamp(1.05rem,2.4vh,1.45rem)}
   .qrcard{background:#fff;color:#16213a;border-radius:16px;padding:.8rem;display:flex;flex-direction:column;align-items:center;gap:.4rem;min-width:clamp(160px,17vw,210px)}
   #qr{width:clamp(130px,14vw,172px);height:clamp(130px,14vw,172px)}
@@ -153,7 +153,7 @@
 
   function load(k,d){ try{ const v=JSON.parse(localStorage.getItem(k)); return v==null?d:v; }catch(e){ return d; } }
   function save(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
-  let chemin=load('rex_chemin',[]); let choix=load('rex_choix',[]);
+  let chemin=load('rex_chemin',[]); let choix=load('rex_choix',[]); let round=parseInt(load('rex_round',1),10)||1;
 
   function renderPath(){ document.getElementById('path').innerHTML='Chemin parcouru : '+(chemin.length?chemin.map(x=>'<b>'+x+'</b>').join(' → '):'<b>—</b>'); }
 
@@ -186,24 +186,8 @@
         footer=document.getElementById('footer'), finEl=document.getElementById('fin'),
         nextBtn=document.getElementById('next'), qEl=document.getElementById('question'), whyEl=document.getElementById('why');
 
-  // ---------- Firebase (round partagé + votes) ----------
-  let fb=null;
-  async function initFb(){
-    if(fb) return fb;
-    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
-    const { getAuth, signInAnonymously } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
-    const m = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
-    const app=initializeApp(REX.firebase); const auth=getAuth(app); await signInAnonymously(auth);
-    fb={ db:m.getFirestore(app), m };
-    return fb;
-  }
-  async function bumpRound(){ // reset des votes
-    try{ const {db,m}=await initFb(); const ref=m.doc(db,'control','live');
-      const snap=await m.getDoc(ref); const r=(snap.exists()&&snap.data().round)||1;
-      await m.setDoc(ref,{round:r+1},{merge:true}); }catch(e){ console.warn(e); }
-  }
-  function resetAll(then){ try{ localStorage.removeItem('rex_chemin'); localStorage.removeItem('rex_choix'); }catch(e){}
-    bumpRound().finally(()=>{ then&&then(); }); }
+  // reset : vide le chemin local et relance un nouveau round (porté ensuite par le QR)
+  function resetAll(then){ try{ localStorage.removeItem('rex_chemin'); localStorage.removeItem('rex_choix'); localStorage.setItem('rex_round', JSON.stringify(round+1)); }catch(e){} then&&then(); }
 
   // ---------- navigation ----------
   function goTo(target, chosen){
@@ -257,8 +241,8 @@
     d.innerHTML=`<div class="hd"><span class="bdg">${i+1}</span><span class="lab">${c.label}</span></div>`+
       `<div class="res"><span class="track"><span class="fill" id="fill-${i}"></span></span><span class="cnt" id="cnt-${i}">0</span></div>`;
     choixEl.appendChild(d); });
-  const voteUrl=(REX.site||location.origin)+'/'+s;
-  document.getElementById('voteurl').textContent='/'+s;
+  const voteUrl=(REX.site||location.origin)+'/vote/'+s+'?r='+round;
+  document.getElementById('voteurl').textContent='/vote/'+s;
   if(window.QRCode){ try{ new QRCode(document.getElementById('qr'),{text:voteUrl,width:172,height:172,colorDark:'#141414',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.M}); }catch(e){} }
 
   let tally=data.choix.map(()=>0);
@@ -276,16 +260,15 @@
 
   (async function(){
     try{
-      const {db,m}=await initFb();
-      let unsub=null, round=1;
-      m.onSnapshot(m.doc(db,'control','live'), d=>{
-        round=(d.exists()&&d.data().round)||1;
-        if(unsub) unsub();
-        const col=m.collection(db,'polls','slide-'+s,'rounds',String(round),'votes');
-        unsub=m.onSnapshot(col, snap=>{ const t=data.choix.map(()=>0);
-          snap.forEach(doc=>{ const i=Number(doc.data().choice); if(i>=0&&i<t.length) t[i]++; });
-          tally=t; refresh(); });
-      });
+      const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+      const { getAuth, signInAnonymously } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
+      const { getFirestore, collection, onSnapshot } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+      const app=initializeApp(REX.firebase); await signInAnonymously(getAuth(app));
+      const db=getFirestore(app);
+      const col=collection(db,'polls','slide-'+s,'rounds',String(round),'votes');
+      onSnapshot(col, snap=>{ const t=data.choix.map(()=>0);
+        snap.forEach(doc=>{ const i=Number(doc.data().choice); if(i>=0&&i<t.length) t[i]++; });
+        tally=t; refresh(); });
     }catch(e){ console.warn('Firebase indispo',e); }
   })();
 })();
