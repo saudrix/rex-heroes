@@ -24,13 +24,15 @@
     height:100vh; display:flex; flex-direction:column; overflow:hidden;
     color:var(--txt);
     font-family:"Arial Narrow","Roboto Condensed",Arial,system-ui,sans-serif;
-    background-color:#565652;                 /* béton clair */
-    background-image:
-      radial-gradient(1400px 820px at 50% 42%, rgba(255,255,255,.05), rgba(0,0,0,0) 55%),
-      linear-gradient(rgba(24,24,22,.46), rgba(24,24,22,.56)),
-      repeating-linear-gradient(0deg,  rgba(0,0,0,.16) 0 2px, transparent 2px 150px),  /* joints de dalles */
-      repeating-linear-gradient(90deg, rgba(0,0,0,.16) 0 2px, transparent 2px 198px);
+    background:
+      radial-gradient(120% 80% at 82% 2%, rgba(255,210,120,.22), rgba(255,210,120,0) 46%),
+      linear-gradient(180deg,#0a1730 0%,#10294d 42%,#1c3350 72%,#243a4a 100%),
+      repeating-linear-gradient(0deg,  rgba(0,0,0,.10) 0 2px, transparent 2px 150px),  /* joints de dalles, estompes */
+      repeating-linear-gradient(90deg, rgba(0,0,0,.10) 0 2px, transparent 2px 198px);
   }
+  .scan{position:fixed;inset:0;pointer-events:none;z-index:1;mix-blend-mode:overlay;opacity:.45;
+    background:repeating-linear-gradient(115deg, rgba(255,255,255,.05) 0 3px, transparent 3px 26px)}
+  .wrap, header, .stage, footer{position:relative;z-index:2}
   header{
     flex:0 0 auto; display:flex; align-items:center; gap:.9rem;
     padding:clamp(.5rem,1.4vh,1rem) clamp(1rem,3vw,2.2rem);
@@ -43,6 +45,9 @@
     font-weight:700; letter-spacing:.06em;
     padding:.18em .6em; font-size:clamp(.9rem,2.1vh,1.4rem);
   }
+  .brand{display:flex;align-items:center;gap:.5rem;font-weight:700;letter-spacing:.04em;font-size:clamp(.9rem,2.1vh,1.3rem)}
+  .brand .ico{width:1.4em;height:1.4em;display:grid;place-items:center;color:var(--sign-black);background:var(--paint);border-radius:7px;font-size:.78em}
+  .chip{background:rgba(242,196,0,.14);border:1px solid rgba(242,196,0,.5);color:var(--paint);border-radius:999px;padding:.2em .7em;font-weight:700;letter-spacing:.1em;font-size:clamp(.6rem,1.5vh,.85rem)}
   header h1{
     margin:0; font-weight:700; letter-spacing:.04em;
     font-size:clamp(1rem,2.4vh,1.6rem); color:var(--txt); text-transform:uppercase;
@@ -63,10 +68,12 @@
 </style>
 </head>
 <body>
+  <div class="scan"></div>
   <header>
+    <span class="brand"><span class="ico">✈</span> REX HÉROS</span>
     <span class="tag">RÉCAP</span>
-    <h1>Carte des opérations &middot; plan de tarmac</h1>
-    <span class="sub">Ce REX dont vous êtes les héros</span>
+    <h1>Carte des opérations</h1>
+    <span class="sub"><span class="chip">4SHARE MORNING</span></span>
   </header>
 
   <div class="stage">
