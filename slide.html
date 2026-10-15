@@ -229,7 +229,7 @@
     d.innerHTML=`<div class="hd"><span class="bdg">${locked?'🔒':(i+1)}</span><span class="lab">${c.label}</span></div>`+
       (locked ? `<div class="lockmsg">${c.lockMsg||'Verrouillé'}</div>`
               : `<div class="res"><span class="track"><span class="fill" id="fill-${i}"></span></span><span class="cnt" id="cnt-${i}">0</span></div>`);
-    choixEl.appendChild(d); });
+    if(!locked){d.style.cursor='pointer';d.title='Aller a cette slide (test)';d.addEventListener('click',()=>goTo(c.target,c));} choixEl.appendChild(d); });
   const voteUrl=(REX.site||location.origin)+'/votant.html?s='+s+'&r='+round+'&c='+ctx.cadrage;
   document.getElementById('voteurl').textContent='votant.html?s='+s;
   if(window.QRCode){ try{ new QRCode(document.getElementById('qr'),{text:voteUrl,width:320,height:320,colorDark:'#141414',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.M}); }catch(e){} }
