@@ -84,6 +84,7 @@
   #pop .verdict{align-self:flex-start;font-weight:800;letter-spacing:.14em;border-radius:8px;padding:.25em .8em;font-size:clamp(1.1rem,2.8vh,1.7rem);transform:rotate(-3deg);border:3px solid}
   #pop .verdict.succes{color:#58d98c;border-color:#58d98c}
   #pop .verdict.echec{color:#ff7a66;border-color:#ff7a66}
+  #pop .verdict.mitige{color:#f5a623;border-color:#f5a623}
   #pop .verdict.avenir{color:#c3c7cc;border-color:#c3c7cc}
   #pop .note{margin:0;color:#eee8d9;font-size:clamp(1.1rem,2.7vh,1.6rem);line-height:1.4}
 </style>
@@ -210,8 +211,8 @@ function openPop(inf){
   document.getElementById('p-ttl').textContent=inf.titre;
   document.getElementById('p-lbl').textContent=inf.lbl||'Choix effectué';
   document.getElementById('p-choice').textContent=inf.label||'(pas de choix, passage imposé)';
-  const v=document.getElementById('p-verdict'); const k=inf.verdict==='succes'?'succes':(inf.verdict==='echec'?'echec':'avenir');
-  v.className='verdict '+k; v.textContent={succes:'✓ SUCCÈS',echec:'✗ ÉCHEC',avenir:'? À VENIR'}[k];
+  const v=document.getElementById('p-verdict'); const k=['succes','echec','mitige'].includes(inf.verdict)?inf.verdict:'avenir';
+  v.className='verdict '+k; v.textContent={succes:'✓ SUCCÈS',echec:'✗ ÉCHEC',mitige:'~ MITIGÉ',avenir:'? À VENIR'}[k];
   document.getElementById('p-note').textContent=inf.note;
   document.getElementById('pop').classList.add('on');
 }
@@ -331,14 +332,14 @@ N.forEach(n=>{
   }
   const inf = lit ? infoAt(n.id) : null;
   if(inf){
-    const ok=inf.verdict==='succes', ko=inf.verdict==='echec';
+    const ok=inf.verdict==='succes', ko=inf.verdict==='echec', mi=inf.verdict==='mitige';
     const c=document.createElementNS(SVGNS,'circle');
     c.setAttribute('cx',n.d.w+2);c.setAttribute('cy',-2);c.setAttribute('r',15);
-    c.setAttribute('fill',ok?'#27ae60':(ko?'#c0392b':'#7d8590'));c.setAttribute('stroke','#fff');c.setAttribute('stroke-width',2.5);
+    c.setAttribute('fill',ok?'#27ae60':(ko?'#c0392b':(mi?'#e08e0b':'#7d8590')));c.setAttribute('stroke','#fff');c.setAttribute('stroke-width',2.5);
     g.appendChild(c);
     const tv=document.createElementNS(SVGNS,'text');
     tv.setAttribute('x',n.d.w+2);tv.setAttribute('y',-1);tv.setAttribute('text-anchor','middle');tv.setAttribute('dominant-baseline','central');
-    tv.setAttribute('fill','#fff');tv.setAttribute('font-weight','800');tv.setAttribute('font-size',17);tv.textContent=ok?'✓':(ko?'✗':'?');
+    tv.setAttribute('fill','#fff');tv.setAttribute('font-weight','800');tv.setAttribute('font-size',17);tv.textContent=ok?'✓':(ko?'✗':(mi?'~':'?'));
     g.appendChild(tv);
     g.style.cursor='pointer';
     g.addEventListener('click',()=>openPop(inf));
