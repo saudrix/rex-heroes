@@ -238,12 +238,13 @@
   function firstUnlocked(){ for(let i=0;i<data.choix.length;i++){ if(!isLocked(i)) return i; } return 0; }
   function unlockedTotal(){ let t=0; data.choix.forEach((c,i)=>{ if(!isLocked(i)) t+=tally[i]; }); return t; }
   function leader(){ let m=-1,idx=firstUnlocked(); data.choix.forEach((c,i)=>{ if(isLocked(i)) return; if(tally[i]>m){m=tally[i];idx=i;} }); return idx; }
+  function shortLabel(s){ s=String(s||""); return s.length>44 ? s.slice(0,42).trim()+"…" : s; }
   function refresh(){ const total=unlockedTotal(), lead=leader();
     data.choix.forEach((c,i)=>{ if(isLocked(i)) return; const f=document.getElementById('fill-'+i), cnt=document.getElementById('cnt-'+i);
       const pct=total?Math.round(tally[i]/total*100):0; if(f) f.style.width=pct+'%'; if(cnt) cnt.textContent=tally[i]+(total?('  '+pct+'%'):'');
       choixEl.children[i].classList.toggle('lead',total>0&&i===lead); });
     nextBtn.disabled=total===0;
-    nextBtn.textContent=total?('Slide suivante → choix '+(lead+1)):'En attente de votes…';
+    nextBtn.textContent=total?('→ '+shortLabel(data.choix[lead].label)):'En attente de votes…';
     nextBtn.dataset.lead=lead; }
   function act(){ if(unlockedTotal()===0) return; const lead=parseInt(nextBtn.dataset.lead||String(firstUnlocked()),10); const c=data.choix[lead]; goTo(c.target,c); }
   nextBtn.addEventListener('click',act);
