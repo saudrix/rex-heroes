@@ -124,8 +124,8 @@
     <span class="lg"><span class="box" style="background:var(--sign-yellow);border-color:#caa400"></span> slide</span>
     <span class="lg"><span class="box" style="background:var(--cadrage);border-color:var(--cadrage-edge)"></span> point de cadrage</span>
     <span class="lg"><span class="box" style="background:var(--over);border-color:#e06456"></span> game over</span>
-    <span class="lg"><span class="box" style="background:var(--tada);border-color:#58d98c"></span> fin TADA</span>
-    <span class="lg"><span class="box" style="background:var(--bof);border-color:#c3c7cc"></span> fin BOF</span>
+    <span class="lg"><span class="box" style="background:var(--tada);border-color:#58d98c"></span> FIN +</span>
+    <span class="lg"><span class="box" style="background:var(--bof);border-color:#c3c7cc"></span> FIN -</span>
   </footer>
 
 <div id="pop"><div class="card"><div class="hd"><span class="code" id="p-code"></span><span class="ttl" id="p-ttl"></span><button class="x" id="p-x" aria-label="Fermer">✕</button></div><div class="bd"><div class="lbl" id="p-lbl">Choix effectué</div><div class="choice" id="p-choice"></div><div class="verdict" id="p-verdict"></div><p class="note" id="p-note"></p></div></div></div>
@@ -154,8 +154,8 @@ const N = [
   {id:'S15', num:'15', x:1430,y:480, t:'slide'},
   {id:'S17', num:'17', x:1560,y:335, t:'slide'},
   {id:'S18', num:'18', x:1560,y:625, t:'slide'},
-  {id:'TADA',num:'🎉', x:1655,y:180, t:'tada', lab:'TADA'},
-  {id:'BOF', num:'🏁', x:1655,y:760, t:'bof',  lab:'BOF'},
+  {id:'TADA',num:'🎉', x:1655,y:180, t:'tada', lab:'FIN +'},
+  {id:'BOF', num:'🏁', x:1655,y:760, t:'bof',  lab:'FIN -'},
 ];
 const E = [
   ['S0','S2'],['S0','S1'],
@@ -206,7 +206,7 @@ function infoAt(id){
   return v ? {id, titre:d.chapitre||id, label:v.choix||label, lbl:d.fin?'Dénouement':(d.choix?'Choix effectué':'Passage'), verdict:v.verdict, note:v.note||''} : null;
 }
 function openPop(inf){
-  document.getElementById('p-code').textContent=inf.id;
+  document.getElementById('p-code').textContent=({TADA:'FIN +',BOF:'FIN -'})[inf.id]||inf.id;
   document.getElementById('p-ttl').textContent=inf.titre;
   document.getElementById('p-lbl').textContent=inf.lbl||'Choix effectué';
   document.getElementById('p-choice').textContent=inf.label||'(pas de choix, passage imposé)';

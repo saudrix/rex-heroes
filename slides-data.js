@@ -185,12 +185,12 @@ window.REX = {
       texte:"Trop de virages, pas assez de cadrage : l'équipe a fini en burn-out. Il faut tout arrêter."
     },
     "FINTADA": {
-      node:"FINTADA", fin:"tada", chapitre:"FIN · version TADA", emoji:"🎉",
+      node:"FINTADA", fin:"tada", chapitre:"FIN +", emoji:"🎉",
       titreFin:"Mission accomplie",
       texte:"Cadrage solide, design system en place, budget tenu : le module de facturation est livré, propre et durable. Les héros rentrent couverts de gloire."
     },
     "FINBOF": {
-      node:"FINBOF", fin:"bof", chapitre:"FIN · version BOF", emoji:"🏁",
+      node:"FINBOF", fin:"bof", chapitre:"FIN -", emoji:"🏁",
       titreFin:"C'est livré",
       texte:"Le module est en production, mais au prix de compromis et d'un peu de dette. Ça passe, sans panache. La prochaine fois, on cadrera plus tôt."
     }
