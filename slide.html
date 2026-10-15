@@ -63,13 +63,13 @@
   .lockmsg{margin-top:auto;color:var(--muted);font-style:italic;font-size:clamp(.82rem,1.8vh,1.08rem)}
   .choice .hd{display:flex;align-items:baseline;gap:.6rem}
   .choice .bdg{font-weight:800;color:var(--sign-black);background:var(--paint);border-radius:7px;padding:.05em .5em;font-size:clamp(1.1rem,2.6vh,1.5rem)}
-  .choice .lab{font-size:clamp(1.1rem,2.5vh,1.6rem);font-weight:800;line-height:1.12}
+  .choice .lab{font-size:clamp(1.35rem,3.1vh,2.1rem);font-weight:800;line-height:1.14}
   .choice .res{display:grid;grid-template-columns:1fr auto;gap:.6rem;align-items:center;margin-top:auto}
   .choice .track{display:block;height:16px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden}
   .choice .fill{display:block;height:100%;width:0;background:var(--lit);border-radius:999px;transition:width .4s}
   .choice .cnt{font-weight:800;font-variant-numeric:tabular-nums;min-width:4em;text-align:right;font-size:clamp(1.05rem,2.4vh,1.45rem)}
-  .qrcard{background:#fff;color:#16213a;border-radius:16px;padding:.8rem;display:flex;flex-direction:column;align-items:center;gap:.4rem;min-width:clamp(160px,17vw,210px)}
-  #qr{width:clamp(130px,14vw,172px);height:clamp(130px,14vw,172px)}
+  .qrcard{background:#fff;color:#16213a;border-radius:16px;padding:1rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;min-width:clamp(300px,32vw,480px)}
+  #qr{width:clamp(200px,22vw,300px);height:clamp(200px,22vw,300px)}
   #qr img,#qr canvas{width:100%!important;height:100%!important}
   .qrcard .q1{font-weight:800;letter-spacing:.04em;font-size:clamp(.95rem,2vh,1.2rem)}
   .qrcard .q2{font-size:clamp(.78rem,1.6vh,.95rem);color:#55617a;text-align:center;line-height:1.25}
@@ -144,7 +144,6 @@
   <footer id="footer">
     <div class="path" id="path">Chemin parcouru : <b>—</b></div>
     <button class="next" id="next">Slide suivante →</button>
-    <span class="hint"><kbd>Espace</kbd> / <kbd>Entrée</kbd></span>
   </footer>
 
 <script src="/slides-data.js"></script>
@@ -233,7 +232,7 @@
     choixEl.appendChild(d); });
   const voteUrl=(REX.site||location.origin)+'/votant.html?s='+s+'&r='+round+'&c='+ctx.cadrage;
   document.getElementById('voteurl').textContent='votant.html?s='+s;
-  if(window.QRCode){ try{ new QRCode(document.getElementById('qr'),{text:voteUrl,width:172,height:172,colorDark:'#141414',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.M}); }catch(e){} }
+  if(window.QRCode){ try{ new QRCode(document.getElementById('qr'),{text:voteUrl,width:320,height:320,colorDark:'#141414',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.M}); }catch(e){} }
 
   let tally=data.choix.map(()=>0);
   function firstUnlocked(){ for(let i=0;i<data.choix.length;i++){ if(!isLocked(i)) return i; } return 0; }
